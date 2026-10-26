@@ -1,0 +1,44 @@
+# Enfants convenus de l'initiative, dans son dossier tickets/ ; tickets.py ignore les clés inconnues.
+# L'ordre du tableau est l'ordre de construction. `id` est permanent, jamais réutilisé.
+
+[[epic]]
+id = 1
+slug = "epic-comptes-permissions"
+title = "Comptes et permissions"
+description = "Un visiteur crée un compte, se connecte et gère ses données personnelles (RGPD) sur le site déployé ; les permissions régissent les accès, et le socle (bibliothèque de domaine + application web, CI, déploiement) est en place."
+covers = ["R1", "R2", "R3"]
+
+[[epic]]
+id = 2
+slug = "epic-saisons"
+title = "Saisons et options"
+description = "L'équipe de gestion configure, pour une saison, les options proposées aux adhérents et leur prix, sur le site déployé ; les options de la saison en cours ou à venir se laissent consulter par les adhérents."
+covers = ["R4"]
+after = [{ epic = 1, needs = "le socle déployé et les permissions de gestion" }]
+
+[[epic]]
+id = 3
+slug = "epic-adhesions-paiement"
+title = "Adhésions et paiement"
+description = "Un visiteur adhère à une saison à venir ou en cours en choisissant ses options, paie en ligne via HelloAsso ou par un paiement hors ligne qu'enregistre l'équipe de gestion, sur le site déployé ; un représentant légal souscrit depuis son compte pour ses mineurs."
+covers = ["R5", "R6", "R9"]
+after = [
+  { epic = 1, needs = "le compte utilisateur et son espace personnel" },
+  { epic = 2, needs = "les options et les prix de la saison choisie" },
+]
+
+[[epic]]
+id = 4
+slug = "epic-liste-adherents"
+title = "Liste des adhérents"
+description = "L'équipe de gestion consulte et corrige la liste des adhérents d'une saison sur le site déployé, et l'exporte en tableur ouvrable par les tableurs courants."
+covers = ["R7", "R8"]
+after = [{ epic = 3, needs = "les adhésions enregistrées pour la saison" }]
+
+[[epic]]
+id = 5
+slug = "epic-federation"
+title = "Fédération (FFME)"
+description = "L'adhésion vérifie auprès de l'API FFME si une personne est déjà licenciée et y enregistre un nouveau licencié, sur le site déployé."
+covers = ["R10"]
+after = [{ epic = 3, needs = "le parcours d'adhésion auquel rattacher la licence" }]
