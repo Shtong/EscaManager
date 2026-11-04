@@ -2,7 +2,7 @@
 type: initiative
 title: "Gestion en ligne des adhésions et des adhérents du SCB Escalade"
 sources: [_bmad-output/initiative-escamanager/entretien-initial.md]
-companions: [_bmad-output/initiative-escamanager/glossaire.md]
+companions: [_bmad-output/initiative-escamanager/glossaire.md, _bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md]
 after: []
 risk: medium
 ---
@@ -64,6 +64,7 @@ Pour l'équipe de gestion et les adhérents du SCB Escalade, une campagne d'adh�
 - entretien initial — `_bmad-output/initiative-escamanager/entretien-initial.md` — sections Gestion des utilisateurs, Gestion des saisons, Gestion des adhésions, Gestion des membres, Hors périmètre, Livrable technique, Systèmes externes, Langue et maintenance.
 - glossaire — `_bmad-output/initiative-escamanager/glossaire.md` (compagnon : correspondance des termes français/anglais du domaine).
 - site web du club — https://escaladescb.fr/ — présentation du club (cours jeunes et adultes, permanences), inscriptions par saison, affiliation FFME, identité visuelle actuelle.
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md` (compagnon, adoptée le 04/11/2026 : décisions AD-1 à AD-14 que les épics citent) ; guide du repreneur bénévole à ses côtés (`prise-en-main-benevole.md`).
 
 ## Notes
 

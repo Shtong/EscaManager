@@ -34,3 +34,4 @@ Pour un futur adhérent, souscrire et payer une adhésion à une saison se fait 
 ## References
 
 - parent — `_bmad-output/initiative-escamanager/initiative-escamanager.md`, section Requirements (R5, R6, R9).
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md`, section Invariants & Rules (AD-5 port HelloAsso, AD-9 entités, AD-13 prix notamment).

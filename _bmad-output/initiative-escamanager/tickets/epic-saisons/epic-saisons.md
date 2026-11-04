@@ -32,3 +32,4 @@ Pour l'équipe de gestion, l'offre d'une saison se configure sans intervention t
 ## References
 
 - parent — `_bmad-output/initiative-escamanager/initiative-escamanager.md`, section Requirements (R4).
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md`, section Invariants & Rules (AD-13 saisons et prix notamment).

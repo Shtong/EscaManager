@@ -31,3 +31,4 @@ Pour chaque adhésion, l'état de la licence FFME est connu et un nouveau licenc
 ## References
 
 - parent — `_bmad-output/initiative-escamanager/initiative-escamanager.md`, section Requirements (R10).
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md`, section Invariants & Rules (AD-5 bouchon FFME, AD-10 composition notamment).

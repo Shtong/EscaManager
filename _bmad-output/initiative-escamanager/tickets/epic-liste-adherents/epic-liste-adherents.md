@@ -33,3 +33,4 @@ Pour l'équipe de gestion, l'état des adhésions d'une saison se voit, se corri
 ## References
 
 - parent — `_bmad-output/initiative-escamanager/initiative-escamanager.md`, section Requirements (R7, R8).
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md`, section Invariants & Rules (AD-12 ligne adhérent notamment).

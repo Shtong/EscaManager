@@ -34,3 +34,4 @@ Pour chaque personne du club, un compte protégé régit ses accès, sur un socl
 ## References
 
 - parent — `_bmad-output/initiative-escamanager/initiative-escamanager.md`, section Requirements (R1–R3).
+- ossature d'architecture — `_bmad-output/initiative-escamanager/architecture-escamanager/architecture-escamanager.md`, section Invariants & Rules (AD-11 effacement RGPD, AD-14 permissions notamment).
