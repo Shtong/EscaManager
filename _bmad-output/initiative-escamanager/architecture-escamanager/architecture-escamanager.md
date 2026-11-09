@@ -7,7 +7,7 @@ paradigm: 'hexagonal (ports et adaptateurs), version légère'
 scope: 'comptes et permissions, saisons, adhésions et paiement, liste des adhérents, fédération (FFME) — première partie du projet'
 status: final
 created: '2026-10-26'
-updated: '2026-11-04'
+updated: '2026-11-09'
 binds: [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]
 sources: [_bmad-output/initiative-escamanager/initiative-escamanager.md]
 ---
@@ -113,6 +113,12 @@ flowchart LR
 - **Prevents:** permissions nommées différemment selon les épics ; rôles du club codés en dur dans une app.
 - **Rule:** les permissions sont des identifiants stables nommés dans `domaine/` (format unique, une seule liste) ; les rôles nommés du club (président, trésorier, secrétaire, membre du CA, adhérent) sont des ensembles de permissions enregistrés en données, jamais codés en dur ni référencés dans le code.
 
+### AD-15 — Neutralité d'hébergement
+
+- **Binds:** tous — déploiement
+- **Prevents:** verrouillage sur un PaaS précis ; une story introduit une dépendance propre à un hébergeur (buildpack, SDK, configuration implicite).
+- **Rule:** l'application se déploie sur toute infrastructure exécutant Python : point d'entrée WSGI standard, configuration exclusive par variables d'environnement, aucune dépendance ni fonction propre à un hébergeur ; la piste de démarrage (Scalingo) est un choix d'exploitation, jamais du code.
+
 ## Consistency Conventions
 
 | Aspect | Convention |
@@ -136,7 +142,7 @@ flowchart LR
 | Pilote BDD | mysqlclient 2.3.0 |
 | Paiement en ligne | HelloAsso — API v5 |
 | CI | GitHub Actions |
-| Hébergement | PaaS — fournisseur choisi à l'épic 1 (candidats : Scalingo, Clever Cloud, PythonAnywhere 10 $/mois) |
+| Hébergement | PaaS — piste Scalingo à l'épic 1 ; code hébergeable partout (AD-15) |
 
 ## Structural Seed
 
@@ -182,7 +188,7 @@ Environnements : **local** (développement) et **production** (PaaS) ; la CI ex�
 
 ## Deferred
 
-- Le fournisseur PaaS exact et son plan — épic 1 (socle) : prix du petit conteneur à confirmer chez Scalingo et Clever Cloud ; PythonAnywhere vérifié à 10 $/mois mais avec MySQL 8.0 en fin de vie là-bas et sauvegardes manuelles.
+- Le plan exact chez Scalingo (piste retenue au raffinement de l'épic 1, 04/11/2026) — prix du petit conteneur à confirmer à la story socle ; le code reste hébergeable partout (AD-15).
 - La politique de conservation RGPD exacte (suppression ou anonymisation, exceptions légales — licences FFME, obligations comptables) — épic 1, avec le club ; le mécanisme est déjà fixé par AD-11.
 - Le mode du dépôt GitHub (public ou privé) — épic 1 ; GitHub Actions est gratuit dans les deux cas.
 - L'outillage du rendu (CSS, gabarits, HTMX ou JS simple) — épic 1, idéalement après un passage `bmad-ux` sur l'identité visuelle du club.
