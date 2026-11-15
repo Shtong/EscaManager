@@ -43,6 +43,7 @@ Pour chaque personne du club, un compte protégé régit ses accès, sur un socl
 - Une action de gestion est refusée à un compte sans la permission requise ; les six rôles sont semés au premier démarrage.
 - L'admin Django, habillée et en français, permet à l'équipe de gestion de travailler.
 - Le socle (bibliothèque de domaine, application web, CI, déploiement) livre en production ; une sauvegarde se restaure à blanc.
+- Tout le parcours — comptes, espace personnel, admin — est utilisable sur mobile comme sur ordinateur.
 
 ## Boundaries
 
@@ -60,3 +61,9 @@ Pour chaque personne du club, un compte protégé régit ses accès, sur un socl
 - Decision: six rôles semés au premier démarrage, 04/11/2026.
 - Decision: écrans de gestion dans l'admin Django habillée, parcours adhérent en gabarits dédiés, 04/11/2026.
 - Decision: hébergeur neutre, piste de démarrage Scalingo, 04/11/2026.
+- Decision: balle traceuse : l'entrée 1 (socle et première page en production), 09/11/2026.
+- Decision: séquencement (09/11/2026) : l'effacement (6) attend les données personnelles (5) parce que la demande part de la page des données ; les permissions précèdent l'admin (3→4) ; la sauvegarde (7) ne dépend que du socle et peut avancer librement après lui ; le balayage (8) ferme.
+- Decision: courriels — Brevo pour l'envoi transactionnel (offre gratuite vérifiée), identifiants en variables d'environnement, 12/11/2026.
+- Decision: ordre du tableau confirmé tel quel, 15/11/2026.
+- Decision: ensembles de permissions des six rôles écrits à la volée dans la story 3, jeu initial simple et modifiable dans l'admin, 15/11/2026.
+- Decision: dépôt GitHub public, 15/11/2026.

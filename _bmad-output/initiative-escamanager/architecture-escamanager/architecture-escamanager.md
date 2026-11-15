@@ -141,6 +141,7 @@ flowchart LR
 | Base de données | MySQL 8.4 LTS (cible) — plancher backend 8.0.11+ / MariaDB 10.5+ |
 | Pilote BDD | mysqlclient 2.3.0 |
 | Paiement en ligne | HelloAsso — API v5 |
+| Courriels transactionnels | Brevo — offre gratuite (relais SMTP) |
 | CI | GitHub Actions |
 | Hébergement | PaaS — piste Scalingo à l'épic 1 ; code hébergeable partout (AD-15) |
 

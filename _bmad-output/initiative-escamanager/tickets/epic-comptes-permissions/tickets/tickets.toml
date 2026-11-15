@@ -1,0 +1,90 @@
+# Enfants convenus de l'épic, dans son dossier tickets/ ; tickets.py ignore les clés inconnues.
+# L'ordre du tableau est l'ordre de construction. `id` est permanent, jamais réutilisé.
+
+[[entry]]
+id = 1
+type = "story"
+title = "Socle et première page en production"
+description = "Dépôt vivant : pyproject, domaine/ en paquet pur avec sa première lecture (une requête du domaine, son dépôt via l'ORM, jusqu'à MySQL) servie par la page d'accueil, CI GitHub Actions (tests du domaine sans base, application sur MySQL), déploiement Scalingo neutre (WSGI standard, variables d'environnement). Une étape humaine crée le dépôt GitHub, le compte Scalingo, l'application, sa base MySQL et le compte Brevo du club (courriels transactionnels, offre gratuite)."
+verify = "Le site répond à l'adresse de production et la CI du dépôt est verte ; un test d'imports garantit que domaine/ n'importe rien d'extérieur."
+covers = ["R4", "R5"]
+after = []
+hitl = true
+risk = "medium"
+
+[[entry]]
+id = 2
+type = "story"
+title = "Comptes : inscription confirmée, connexion, réinitialisation"
+description = "Le parcours des comptes sur django.contrib.auth adapté au domaine : création de compte avec courriel de confirmation envoyé par le SMTP du club, connexion, déconnexion, réinitialisation du mot de passe, espace personnel minimal qui prépare les entrées suivantes (données personnelles, effacement)."
+verify = "Un visiteur crée un compte, le confirme par courriel, se connecte et voit son espace ; il se déconnecte et n'y a plus accès ; la réinitialisation fonctionne ; le parcours est utilisable sur mobile comme sur ordinateur."
+covers = ["R1"]
+after = [1]
+hitl = false
+risk = "low"
+
+[[entry]]
+id = 3
+type = "story"
+title = "Permissions et six rôles semés"
+description = "Le vocabulaire des permissions dans le domaine (AD-14), l'adaptateur vers le mécanisme unique de vérification, les six rôles semés en données au premier démarrage, et la gestion des rôles et permissions dans l'admin."
+verify = "Un compte sans la permission requise se voit refuser une action de gestion ; les six rôles du club apparaissent au premier démarrage."
+covers = ["R3"]
+after = [2]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 4
+type = "story"
+title = "Admin habillée pour l'équipe de gestion"
+description = "L'admin Django traduite en français et habillée aux couleurs du club (identité de départ : escaladescb.fr), accessible aux comptes dotés de la permission de gestion."
+verify = "L'équipe de gestion connectée administre les comptes en français, lisiblement sur mobile comme sur ordinateur."
+covers = ["R4"]
+after = [3]
+hitl = false
+risk = "low"
+
+[[entry]]
+id = 5
+type = "story"
+title = "Données personnelles : consulter et corriger"
+description = "L'espace personnel montre les données du compte (identité, courriel) et permet de les corriger ; le formulaire d'inscription ne collecte que le nécessaire (minimisation) ; la page des données prépare la demande d'effacement de l'entrée suivante."
+verify = "Un utilisateur voit ses données personnelles dans son espace et en corrige une ; la correction persiste ; la page est utilisable sur mobile comme sur ordinateur."
+covers = ["R2"]
+after = [2]
+hitl = false
+risk = "low"
+
+[[entry]]
+id = 6
+type = "story"
+title = "Effacement RGPD par anonymisation"
+description = "L'orchestrateur du domaine (AD-11) : demande d'effacement depuis l'espace personnel, suppression du compte et des données de connexion, anonymisation des lignes subsistantes ; les entités des épics suivantes s'y raccorderont."
+verify = "Un utilisateur demande son effacement ; son compte disparaît, il ne peut plus se connecter, et les lignes subsistantes ne portent plus ses données personnelles."
+covers = ["R2"]
+after = [5]
+hitl = false
+risk = "medium"
+
+[[entry]]
+id = 7
+type = "story"
+title = "Sauvegarde restaurée à blanc"
+description = "La sauvegarde de la base configurée chez l'hébergeur, une restauration à blanc exécutée et documentée dans le guide du repreneur ; une étape humaine opère sur la console de l'hébergeur."
+verify = "Une restauration depuis une sauvegarde récente rend une base fonctionnelle, sans toucher la production ; le guide du repreneur le raconte."
+covers = ["R4"]
+after = [1]
+hitl = true
+risk = "medium"
+
+[[entry]]
+id = 8
+type = "story"
+title = "Balayage de refactoring"
+description = "Nettoyage seulement, sur tout l'épic : ce que les plans et revues des stories précédentes ont explicitement différé ; aucune fonctionnalité nouvelle. Le périmètre se fige à son démarrage."
+verify = "La CI reste verte et aucun différé des stories précédentes ne reste ouvert."
+covers = []
+after = [1, 2, 3, 4, 5, 6, 7]
+hitl = false
+risk = "low"
