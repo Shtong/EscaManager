@@ -1,0 +1,21 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}EscaManager — SCB Escalade{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/accueil.css' %}">
+</head>
+<body>
+  <header class="bandeau">
+    <p class="bandeau-club">SCB Escalade</p>
+    <p class="bandeau-outil">EscaManager</p>
+  </header>
+  <main class="contenu">
+    {% block contenu %}{% endblock %}
+  </main>
+  <footer class="pied">
+    <p>Club d'escalade à but non lucratif — Beaucouzé</p>
+  </footer>
+</body>
+</html>

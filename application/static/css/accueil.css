@@ -1,0 +1,81 @@
+/* EscaManager — maquette minimale de la page d'accueil (passage UX à venir).
+   Mobile d'abord : aucune largeur fixe, tout reste lisible vers 375 px (AD-6). */
+
+:root {
+  --encre: #20242c;
+  --encre-douce: #5a6170;
+  --fonce: #23303f;
+  --clair: #f6f4f0;
+  --accent: #a63d2f;
+  --bord: #dcd7cf;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background: var(--clair);
+  color: var(--encre);
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.bandeau {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--fonce);
+  color: #fff;
+}
+
+.bandeau-club {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.bandeau-outil {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #c8d2df;
+}
+
+.contenu {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.decompte {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--bord);
+  border-left: 0.35rem solid var(--accent);
+  border-radius: 0.4rem;
+  font-size: 1.05rem;
+}
+
+.pied {
+  padding: 1rem;
+  border-top: 1px solid var(--bord);
+  color: var(--encre-douce);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.pied p {
+  margin: 0;
+}

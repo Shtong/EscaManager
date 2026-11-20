@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block titre %}Accueil — EscaManager{% endblock %}
+
+{% block contenu %}
+  <h1>Accueil</h1>
+  <p class="decompte">
+    {% if nombre_comptes == 0 %}
+      Aucun compte n'est encore enregistré.
+    {% elif nombre_comptes == 1 %}
+      1 compte est enregistré.
+    {% else %}
+      {{ nombre_comptes }} comptes sont enregistrés.
+    {% endif %}
+  </p>
+{% endblock %}
