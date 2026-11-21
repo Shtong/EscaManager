@@ -7,9 +7,9 @@ paradigm: 'hexagonal (ports et adaptateurs), version légère'
 scope: 'comptes et permissions, saisons, adhésions et paiement, liste des adhérents, fédération (FFME) — première partie du projet'
 status: final
 created: '2026-10-26'
-updated: '2026-11-09'
+updated: '2026-11-21'
 binds: [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]
-sources: [_bmad-output/initiative-escamanager/initiative-escamanager.md]
+sources: [_bmad-output/initiative-escamanager/initiative-escamanager.md, _bmad-output/initiative-escamanager/glossaire.md]
 ---
 
 # Architecture Spine — EscaManager, première partie
@@ -44,14 +44,14 @@ flowchart LR
 ### AD-3 — Une application Django par épic, sans import croisé
 
 - **Binds:** R1–R10 — les cinq épics
-- **Prevents:** couplage croisé entre épics construites séparément (notamment liste et fédération, parallèles après l'épic adhésions).
-- **Rule:** les apps `comptes`, `saisons`, `adhesions`, `membres`, `federation` ne s'importent jamais entre elles ; tout partage passe par `domaine/`, et la composition entre elles se fait uniquement dans `config/` (AD-10).
+- **Prevents:** couplage croisé entre épics construites séparément, de code comme de schéma (notamment liste et fédération, parallèles après l'épic adhésions).
+- **Rule:** les apps `comptes`, `saisons`, `adhesions`, `membres`, `federation` ne s'importent jamais entre elles et n'ont aucune dépendance de schéma entre elles — pas de clé étrangère : un lien entre entités d'apps différentes passe par un identifiant simple, résolu par le domaine ; tout partage passe par `domaine/`, et la composition entre elles se fait uniquement dans `config/` (AD-10). Le code est vérifié par le test d'imports de la CI, comme AD-1 ; les migrations, par la revue de fusion (AD-8).
 
 ### AD-4 — Une entité, un propriétaire, un chemin d'écriture
 
 - **Binds:** tous
-- **Prevents:** deux rédacteurs du même objet ; écritures partielles hors transaction ; paiements confirmés deux fois.
-- **Rule:** chaque entité du domaine a exactement une app propriétaire de sa persistance (AD-9) ; chaque mutation passe par un service du domaine exécuté dans une transaction ; toute mutation née d'un événement externe (notification, webhook HelloAsso) porte une clé d'unicité — rejouer l'événement ne crée pas de doublon.
+- **Prevents:** deux rédacteurs du même objet ; écritures partielles hors transaction ; paiements confirmés deux fois ; le même fait créé deux fois par deux chemins légitimes.
+- **Rule:** chaque entité du domaine a exactement une app propriétaire de sa persistance (AD-9) ; chaque mutation passe par un service du domaine exécuté dans une transaction ; toute mutation née d'un événement externe (notification, webhook HelloAsso) porte une clé d'unicité — rejouer l'événement ne crée pas de doublon ; les identités métier d'une entité (la personne qu'elle représente, la saison d'une adhésion) portent des contraintes d'unicité déclarées dans le domaine et appliquées par le service propriétaire — deux chemins d'écriture ne créent jamais deux fois le même fait.
 
 ### AD-5 — Les systèmes externes ne sont connus que par des ports
 
@@ -74,20 +74,20 @@ flowchart LR
 ### AD-8 — Toute fusion passe par la CI
 
 - **Binds:** tous — dépôt GitHub
-- **Prevents:** du code non testé ou aux migrations cassées arrive en production ; dérive silencieuse entre contributeurs, agents comme bénévoles.
-- **Rule:** chaque fusion traverse GitHub Actions — tests du domaine (sans base), tests de l'application sur MySQL, vérification des migrations — et la CI doit être verte avant fusion.
+- **Prevents:** du code non testé ou aux migrations cassées arrive en production ; dérive silencieuse entre contributeurs, agents comme bénévoles — style, typage et couverture compris.
+- **Rule:** chaque fusion traverse GitHub Actions — garde d'imports du domaine et des apps (AD-1, AD-3), tests du domaine (sans base), tests de l'application sur MySQL, vérification des migrations, lint et format (ruff), typage du domaine (mypy strict), couverture du domaine au seuil (pytest-cov) — et la CI doit être verte avant fusion.
 
 ### AD-9 — Catalogue des entités et de leur propriétaire
 
 - **Binds:** tous — R5, R7, R9, R10 surtout
 - **Prevents:** trois apps définissant chacune leur forme de la même personne (comptes pour les données personnelles, adhésions pour le mineur sans compte, membres pour la liste).
-- **Rule:** `Compte` et `Permission` appartiennent à `comptes` ; `Saison` et `Option` à `saisons` ; `Adhesion`, `Paiement`, `Adherent` — avec les liens représentant légal, mineur et consentement (R9) — à `adhesions` ; `Licence` à `federation`. Toute nouvelle entité entre au catalogue avant d'être persistée.
+- **Rule:** `Compte` et `Permission` appartiennent à `comptes` ; `Saison` et `Option` à `saisons` ; `Adhesion`, `Paiement`, `Adherent` — avec les liens représentant légal, mineur et consentement (R9) — à `adhesions` ; `Licence` à `federation`. Toute nouvelle entité entre au catalogue avant d'être persistée. Une seule entité personne par individu (`Adherent`), jamais d'entité parallèle portant des données personnelles ; toute entité qui en porte se raccorde à l'orchestrateur d'effacement (AD-11) avant sa première persistance.
 
 ### AD-10 — La composition entre apps se fait uniquement dans `config/`
 
 - **Binds:** R10 surtout — fédération × adhésions ; tous les parcours
 - **Prevents:** l'épic fédération réécrit ou importe le parcours de l'épic adhésions en violation de AD-3.
-- **Rule:** le routage, le câblage des ports et adaptateurs, et l'enchaînement des étapes d'un parcours qui traverse plusieurs apps se composent uniquement dans `application/config/` ; le domaine déclare les points d'accroche nommés qu'une app fournit à un parcours ; une app n'appelle jamais le code d'une autre.
+- **Rule:** le routage, le câblage des ports et adaptateurs, et l'enchaînement des étapes d'un parcours qui traverse plusieurs apps se composent uniquement dans `application/config/` ; le domaine déclare les points d'accroche nommés qu'une app fournit à un parcours ; une app n'appelle jamais le code d'une autre. Les parcours composés et les orchestrateurs du domaine (AD-11) ont leurs tests avec la composition, dans les tests de l'application — chaque assemblage a un propriétaire de test.
 
 ### AD-11 — Les mutations multi-propriétaires sont orchestrées par le domaine
 
@@ -111,7 +111,7 @@ flowchart LR
 
 - **Binds:** R3
 - **Prevents:** permissions nommées différemment selon les épics ; rôles du club codés en dur dans une app.
-- **Rule:** les permissions sont des identifiants stables nommés dans `domaine/` (format unique, une seule liste) ; les rôles nommés du club (président, trésorier, secrétaire, membre du CA, adhérent) sont des ensembles de permissions enregistrés en données, jamais codés en dur ni référencés dans le code.
+- **Rule:** les permissions sont des identifiants stables nommés dans `domaine/` (format unique, une seule liste) ; les rôles nommés du club (président, trésorier, secrétaire, membre du CA, adhérent, administrateur technique — six rôles semés au premier démarrage, épic 1) sont des ensembles de permissions enregistrés en données, jamais codés en dur ni référencés dans le code.
 
 ### AD-15 — Neutralité d'hébergement
 
@@ -131,6 +131,7 @@ flowchart LR
 | RGPD | minimisation des données collectées ; consentement enregistré comme donnée (R9) ; exercice des droits sans intervention technique, via AD-11 |
 | Dépendances | toute dépendance nouvelle est open-source et gratuite, disponible sans engagement commercial |
 | Tests | le domaine se teste sans base (paquet pur) ; l'application se teste sur MySQL, pas SQLite (écarts de collation) |
+| Outillage | ruff (lint et format) et mypy (strict sur `domaine/`) s'exécutent dans la CI ; couverture mesurée par pytest-cov avec un seuil minimal sur le domaine, valeur dans `pyproject.toml` et relevable ; la CI est l'autorité, aucun hook local n'est exigé |
 
 ## Stack
 
@@ -143,6 +144,7 @@ flowchart LR
 | Paiement en ligne | HelloAsso — API v5 |
 | Courriels transactionnels | Brevo — offre gratuite (relais SMTP) |
 | CI | GitHub Actions |
+| Qualité (dev) | ruff 0.17 · mypy 2.4 (strict, `domaine/`) · pytest-cov 7.1 |
 | Hébergement | PaaS — piste Scalingo à l'épic 1 ; code hébergeable partout (AD-15) |
 
 ## Structural Seed
@@ -163,7 +165,8 @@ Environnements : **local** (développement) et **production** (PaaS) ; la CI ex�
 {racine}/
   domaine/              # bibliothèque de domaine — paquet pur, testable sans base
     entites/            # Compte, Permission, Saison, Option, Adhesion, Paiement, Adherent, Licence…
-    ports/              # dépôts, requêtes de lecture et clients externes (interfaces uniquement)
+    requetes.py         # requêtes de lecture nommées (la ligne adhérent, AD-12) — tel que livré par la story 1.1
+    ports/              # dépôts et clients externes (interfaces uniquement)
     services/           # règles métier et orchestrateurs ; une mutation = un service
   application/          # projet Django — l'unique adaptatrice
     config/             # réglages, urls, câblage des ports et adaptateurs, composition des parcours
@@ -189,11 +192,13 @@ Environnements : **local** (développement) et **production** (PaaS) ; la CI ex�
 
 ## Deferred
 
-- Le plan exact chez Scalingo (piste retenue au raffinement de l'épic 1, 04/11/2026) — prix du petit conteneur à confirmer à la story socle ; le code reste hébergeable partout (AD-15).
+- Le déploiement en production (piste Scalingo : compte, addon MySQL 8.4, prix du petit conteneur à confirmer) — reporté le 15/11/2026 pour réduire les coûts, l'application s'exécute en local en attendant ; le détail vit dans le registre du travail différé ; le code reste hébergeable partout (AD-15).
 - La politique de conservation RGPD exacte (suppression ou anonymisation, exceptions légales — licences FFME, obligations comptables) — épic 1, avec le club ; le mécanisme est déjà fixé par AD-11.
-- Le mode du dépôt GitHub (public ou privé) — épic 1 ; GitHub Actions est gratuit dans les deux cas.
 - L'outillage du rendu (CSS, gabarits, HTMX ou JS simple) — épic 1, idéalement après un passage `bmad-ux` sur l'identité visuelle du club.
 - Le détail du flux HelloAsso (redirection, webhooks, reçu, sandbox) — raffinement de l'épic 3 ; l'API v5 est vérifiée et vivante.
 - L'API FFME réelle — recherche `bmad-deep-recon` avant le raffinement de l'épic 5 : aucune API publique tierce trouvée à ce jour (04/11/2026), la piste centrale est la passerelle officielle HelloAsso vers myFFME (active pour 2026-2027) ; la vérification de licence existante reste le risque résiduel ; le bouchon (AD-5) découpe en attendant.
 - Les ensembles de permissions concrets (rôles nommés du club) — épic 1.
 - Sauvegarde au-delà de l'hébergeur et supervision (au-delà des logs du PaaS et d'une vérification de disponibilité), recherche plein-texte — non requis par la première partie.
+- Le typage mypy de `application/` (avec django-stubs) — seulement si le club en ressent le besoin ; le domaine est strict dès maintenant (21/11/2026).
+- Un hook pre-commit local — confort facultatif pour les bénévoles ; la CI reste l'autorité (21/11/2026).
+- Un garde pour AD-6 — un test fonctionnel sans JavaScript par page (le client de test n'exécute pas de JS, le contenu essentiel doit être dans le HTML rendu), posé avec l'épic 1 ou 2, comme les autres gardes (21/11/2026).
