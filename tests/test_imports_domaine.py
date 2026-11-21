@@ -33,13 +33,18 @@ def _imports_de(fichier: Path) -> list[str]:
 
 def test_le_domaine_n_importe_que_la_bibliotheque_standard() -> None:
     fichiers = sorted(RACINE_DOMAINE.rglob("*.py"))
-    assert fichiers, "aucun fichier Python trouvé sous domaine/ — la garde ne protège rien"
+    assert fichiers, (
+        "aucun fichier Python trouvé sous domaine/ — la garde ne protège rien"
+    )
 
     violations: list[str] = []
     for fichier in fichiers:
         for module in _imports_de(fichier):
             racine = module.split(".")[0]
-            if racine not in sys.stdlib_module_names and racine not in PAQUETS_AUTORISES:
+            if (
+                racine not in sys.stdlib_module_names
+                and racine not in PAQUETS_AUTORISES
+            ):
                 violations.append(
                     f"{fichier.relative_to(RACINE_DOMAINE.parent)} importe « {module} »"
                 )
@@ -50,17 +55,13 @@ def test_le_domaine_n_importe_que_la_bibliotheque_standard() -> None:
     )
 
 
-def test_une_violation_est_nommee_fichier_et_module(
-    tmp_path, monkeypatch
-) -> None:
+def test_une_violation_est_nommee_fichier_et_module(tmp_path, monkeypatch) -> None:
     """Matrice « Garde d'imports », chemin en échec : un domaine factice
     contenant un import interdit fait échouer la garde en nommant
     précisément le fichier et le module."""
     domaine_factice = tmp_path / "domaine"
     domaine_factice.mkdir()
-    (domaine_factice / "entites.py").write_text(
-        "import django.db\n", encoding="utf-8"
-    )
+    (domaine_factice / "entites.py").write_text("import django.db\n", encoding="utf-8")
     monkeypatch.setattr(f"{__name__}.RACINE_DOMAINE", domaine_factice)
 
     with pytest.raises(AssertionError) as erreur:

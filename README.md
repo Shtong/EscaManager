@@ -62,10 +62,18 @@ sans JavaScript.
 ## Tests
 
 Le domaine se teste sans aucune base ; l'application se teste sur la MySQL
-locale.
+locale. Trois contrôles continus accompagnent les tests — lint et format
+(ruff), typage strict du domaine (mypy), couverture du domaine au seuil de
+90 % (pytest-cov, valeur dans `pyproject.toml`) ; la CI les exécute à
+chaque fusion (AD-8), aucun hook local n'est exigé.
 
 ```bash
-pytest tests/test_imports_domaine.py tests/domaine -q   # garde AD-1 + domaine, sans aucune base
+ruff check .                                            # lint — zéro constat attendu
+ruff format --check .                                   # format — rien à reformatter
+mypy                                                    # typage strict du domaine
+# gardes d'imports (AD-1, AD-3) et tests du domaine, sans aucune base,
+# couverture de domaine/ au seuil de 90 % :
+pytest tests/test_imports_domaine.py tests/test_imports_apps.py tests/domaine -q --cov=domaine --cov-report=term-missing
 docker compose up -d --wait                             # MySQL locale
 pytest tests/application -q                             # application, sur MySQL
 python manage.py makemigrations --check --dry-run       # aucune migration ne doit manquer
@@ -74,10 +82,11 @@ python manage.py makemigrations --check --dry-run       # aucune migration ne do
 ## CI (GitHub Actions)
 
 Toute fusion passe par la CI et n'a lieu qu'après CI verte (AD-8) :
-`.github/workflows/ci.yml` exécute deux jobs — « Domaine — sans base »
-(garde d'imports et tests du domaine, sans service MySQL) et
-« Application — sur MySQL » (service MySQL 8.4, `makemigrations --check`,
-tests de l'application).
+`.github/workflows/ci.yml` exécute deux jobs — « Domaine et qualité —
+sans base » (lint et format ruff, typage strict mypy du domaine, gardes
+d'imports AD-1 et AD-3, tests du domaine avec couverture au seuil de
+90 %, sans service MySQL) et « Application — sur MySQL » (service
+MySQL 8.4, `makemigrations --check`, tests de l'application).
 
 ## Déploiement différé
 
@@ -99,5 +108,5 @@ application/      projet Django — l'unique adaptatrice
   comptes/        épic 1 : comptes — modèle, dépôt ORM, vue d'accueil
   gabarits/       gabarits HTML en français, sans JavaScript
   static/         feuilles de style
-tests/            garde d'imports, tests du domaine (sans base), tests de l'application (MySQL)
+tests/            gardes d'imports (AD-1, AD-3), tests du domaine (sans base), tests de l'application (MySQL)
 ```

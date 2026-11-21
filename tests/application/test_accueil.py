@@ -4,10 +4,10 @@ Prouvent la chaîne complète : page → domaine → dépôt → ORM → MySQL.
 """
 
 import pytest
+from django.db.utils import OperationalError
 
 from application.comptes.depots import DepotComptesDjango
 from application.comptes.modeles import CompteDjango
-from django.db.utils import OperationalError
 
 
 @pytest.mark.django_db

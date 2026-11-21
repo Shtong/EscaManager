@@ -7,23 +7,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CompteDjango',
+            name="CompteDjango",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('courriel', models.EmailField(max_length=254, unique=True, verbose_name='courriel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "courriel",
+                    models.EmailField(
+                        max_length=254, unique=True, verbose_name="courriel"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'compte',
-                'verbose_name_plural': 'comptes',
-                'db_table': 'comptes_compte',
+                "verbose_name": "compte",
+                "verbose_name_plural": "comptes",
+                "db_table": "comptes_compte",
             },
         ),
     ]

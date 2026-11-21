@@ -21,6 +21,7 @@ IMPORTER_REGLAGES = "import application.config.settings"
 def _sous_processus(environnement: dict[str, str]) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, "-c", IMPORTER_REGLAGES],
+        check=False,
         env=environnement,
         capture_output=True,
         text=True,

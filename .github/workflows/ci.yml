@@ -1,6 +1,8 @@
 # CI d'EscaManager — toute fusion passe par ici, et seulement après CI
-# verte (AD-8). Deux jobs : le domaine sans aucune base, l'application
-# sur MySQL 8.4 comme en production (jamais SQLite — AD-7).
+# verte (AD-8). Deux jobs : le domaine et la qualité sans aucune base
+# (lint et format ruff, typage strict mypy, gardes d'imports AD-1 et
+# AD-3, tests du domaine couverts au seuil), l'application sur MySQL 8.4
+# comme en production (jamais SQLite — AD-7).
 
 name: CI
 
@@ -11,7 +13,7 @@ on:
 
 jobs:
   domaine:
-    name: Domaine — sans base
+    name: Domaine et qualité — sans base
     runs-on: ubuntu-latest
     env:
       # Valeurs factices : ces tests ne touchent jamais la base, mais les
@@ -27,8 +29,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
       - name: Installer le dépôt
         run: pip install -e ".[dev]"
-      - name: Garde d'imports et tests du domaine (aucune base)
-        run: pytest tests/test_imports_domaine.py tests/domaine -q
+      - name: Lint et format (ruff)
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Typage strict du domaine (mypy)
+        run: mypy
+      - name: Garde d'imports (AD-1, AD-3) et tests du domaine couverts (aucune base)
+        run: pytest tests/test_imports_domaine.py tests/test_imports_apps.py tests/domaine -q --cov=domaine --cov-report=term-missing
 
   application:
     name: Application — sur MySQL

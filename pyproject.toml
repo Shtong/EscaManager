@@ -20,6 +20,9 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-django>=4.9",
+    "pytest-cov>=7.1",
+    "ruff==0.17.6",
+    "mypy>=2.4",
 ]
 
 [tool.setuptools.packages.find]
@@ -29,3 +32,28 @@ include = ["domaine*", "application*"]
 DJANGO_SETTINGS_MODULE = "application.config.settings"
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+# Le code du projet vise Python 3.13 ; on exclut les répertoires sans code exécutable
+target-version = "py313"
+extend-exclude = ["_bmad", ".agents", "_bmad-output"]
+
+[tool.ruff.lint.per-file-ignores]
+# Le jeu de règles est celui par défaut de ruff, figé par le pin ==0.17.6
+# dans l'extra dev. Les migrations sont générées par Django, personne ne
+# les écrit à la main : RUF012 (défaut mutable d'attribut de classe) y est
+# l'idiome standard.
+"**/migrations/*" = ["RUF012"]
+
+[tool.mypy]
+# Typage strict du domaine seul (AD-1 : paquet pur, aucun stub requis) ;
+# « mypy » sans argument vérifie exactement ces fichiers.
+files = ["domaine"]
+python_version = "3.13"
+strict = true
+
+[tool.coverage.report]
+# Seuil de couverture du domaine — la seule valeur, relevable au fil des
+# épics ; pytest-cov l'honore sans drapeau supplémentaire.
+fail_under = 90
+show_missing = true
