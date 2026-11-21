@@ -1,2 +1,19 @@
 # Rendus générés par BMad à chaque session
 _bmad/render/
+
+# Environnement virtuel et artefacts Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Configuration locale — jamais de secret suivi
+.env
+
+# Outils de test
+.pytest_cache/
+
+# Fichiers statiques collectés (WhiteNoise)
+statique/

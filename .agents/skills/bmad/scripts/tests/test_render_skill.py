@@ -27,7 +27,7 @@ from unittest import mock
 from helpers import chmod
 
 SCRIPTS_SRC = Path(__file__).resolve().parents[1]
-REPO = SCRIPTS_SRC.parents[2]
+REPO = SCRIPTS_SRC.parents[3]
 SKILLS_SRC = REPO / "skills"
 CONFIG_TEMPLATE = (SCRIPTS_SRC.parent / "assets" / "config.template.toml").read_text(encoding="utf-8")
 SHARED_SCRIPTS = (
@@ -36,6 +36,8 @@ SHARED_SCRIPTS = (
     "render_skill.py",
     "resolve_config.py",
     "resolve_customization.py",
+    "setup.py",
+    "setup_check.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
 RENDERED_SKILLS = (
@@ -57,7 +59,7 @@ def _team_config(project: Path) -> str:
 
 def _copy_skill(dest: Path, name: str) -> Path:
     shutil.copytree(
-        SKILLS_SRC / name,
+        next(SKILLS_SRC.glob(f"*/{name}")),
         dest,
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
     )
@@ -384,6 +386,28 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("denied", result.stdout.lower())
         self.assertNotIn("Traceback", result.stdout + result.stderr)
         self.assertEqual(list(namespace.iterdir()), [])
+
+    def test_the_setup_preflight_reads_only_the_roots_it_is_given(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, "[workflow]\n", "hello\n")
+        source = "github:acme/tools/skills"
+        (skill / "bmod.toml").write_text(
+            f'[skill]\nbmod = "bmod-demo"\nsource = "{source}"\nrequired_skills = ["other-skill"]\n', encoding="utf-8"
+        )
+        record = skill.parent / "bmod-demo"
+        record.mkdir()
+        (record / "bmod.toml").write_text(
+            f'[bmod]\ncode = "demo"\nversion = "1.0.0"\nupdate_source = "{source}"\nskills = ["fixture"]\n',
+            encoding="utf-8",
+        )
+        elsewhere = ws.outer / "global"
+        (elsewhere / "other-skill").mkdir(parents=True)
+
+        self.assertNotIn("setup:", self._cli(ws.project, skill).stderr)
+        named = self._cli(ws.project, skill, args=("--root", str(skill.parent)))
+        self.assertIn("needs the `other-skill` skill", named.stderr)
+        both = self._cli(ws.project, skill, args=("--root", str(skill.parent), "--root", str(elsewhere)))
+        self.assertNotIn("setup:", both.stderr)
 
     def test_invalid_invocation_halts_before_publication(self):
         invalid = (
@@ -784,7 +808,7 @@ class RenderSkillTests(unittest.TestCase):
                 skill = self._skill(ws, name)
                 snap = rs.render(ws.project, skill).parent
                 markdown = _markdown(snap)
-                self.assertIn("Write `review: 'quick'` and `review_source: 'pinned'`", markdown)
+                self.assertIn("Write `review: quick` and `review_source: pinned`", markdown)
                 self.assertIn("Quick (`quick`)", markdown)
                 self.assertNotIn((snap / "review-prompts" / "edge-case-hunter.md").as_posix(), markdown)
 

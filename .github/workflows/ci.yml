@@ -1,0 +1,83 @@
+# CI d'EscaManager — toute fusion passe par ici, et seulement après CI
+# verte (AD-8). Deux jobs : le domaine sans aucune base, l'application
+# sur MySQL 8.4 comme en production (jamais SQLite — AD-7).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  domaine:
+    name: Domaine — sans base
+    runs-on: ubuntu-latest
+    env:
+      # Valeurs factices : ces tests ne touchent jamais la base, mais les
+      # réglages exigent les deux variables pour charger le projet.
+      SECRET_KEY: cle-factice-pour-la-ci
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/factice
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Installer les bibliothèques système du pilote MySQL
+        run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+      - name: Installer le dépôt
+        run: pip install -e ".[dev]"
+      - name: Garde d'imports et tests du domaine (aucune base)
+        run: pytest tests/test_imports_domaine.py tests/domaine -q
+
+  application:
+    name: Application — sur MySQL
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          # Root dans un conteneur éphémère : seul capable de créer la base
+          # de test « test_* » utilisée par pytest.
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: escamanager
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd "mysqladmin ping --silent"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      SECRET_KEY: cle-factice-pour-la-ci
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/escamanager
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Installer les bibliothèques système du pilote MySQL
+        run: sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev pkg-config
+      - name: Installer le dépôt
+        run: pip install -e ".[dev]"
+      - name: Attendre que MySQL accepte les connexions
+        run: |
+          python - <<'PY'
+          import time
+          import MySQLdb
+          for tentative in range(60):
+              try:
+                  MySQLdb.connect(host="127.0.0.1", user="root", passwd="root")
+              except MySQLdb.OperationalError:
+                  print(f"MySQL pas encore prêt (tentative {tentative + 1}/60)…")
+                  time.sleep(2)
+              else:
+                  print("MySQL prêt.")
+                  break
+          else:
+              raise SystemExit("MySQL injoignable après 120 secondes.")
+          PY
+      - name: Vérifier qu'aucune migration ne manque
+        run: python manage.py makemigrations --check --dry-run
+      - name: Tests de l'application sur MySQL
+        run: pytest tests/application -q
