@@ -6,7 +6,7 @@ Turns any intent input into a container's **derived lines**: the Requirements an
 
 ## Workspace
 
-The workspace is the ticket the user or the calling capability names, else the active initiative; a ticket named by id or title resolves as Dispatch in `workflow.md` says. A ticket with no file yet is created first from `{{ workflow.ticket_template }}`; at create SPEC also fills Description, Outcome, Done when (three to six checks at the altitude of the source's ids), Boundaries (the input's non-goals) and References from the input, open questions to Notes; a later slice revises them. A new initiative, named from the input's title, is created and recorded as On activation in `workflow.md` says.
+The workspace is the ticket the user or the calling capability names, else the active initiative; a ticket named by id or title resolves as Dispatch in `workflow.md` says. A ticket with no file yet is created first from `{{ workflow.ticket_template }}`; at create SPEC also fills Description, Outcome, `Done when` (three to six checks at the altitude of the source's ids), Boundaries (the input's non-goals) and References from the input, open questions to Notes; a later slice revises them. A new initiative, named from the input's title, is created and recorded as On activation in `workflow.md` says.
 
 **No input.** Ask for a file path, pasted content, an explanation, or a source.
 
@@ -26,7 +26,7 @@ Writes go through `{project-root}/_bmad/scripts/memlog.py`:
 
 Read the input and what it links. With a `.memlog.md`, this is an update: read the memlog, the authority on decisions and requirement ids, and re-read every file in `sources:`; preserve the ids and give new requirements the next unused `R<n>`. A ticket with Requirements lines and no memlog is also an update: `memlog.py init`, then append each existing derived line as its own entry, ids kept. Otherwise this is a create. An epic whose refinement settled that its parent's lines are its only input (the ids its `covers` names) gets one line per parent id, `R<n> (parent R<m>)`, in the parent's words, with no elicitation, self-validate or memlog; when the parent changes, its lines are re-rendered from the parent, ids kept.
 
-Pre-sorted input (a PRD, a brief from an upstream BMad skill): keep its separation; lift each requirement and constraint into its line with the source's id in parentheses (`R1 (FR-2, FR-5)`), overflow into companions. Mixed input: sort each claim by the test in Load-bearing into a Requirements or Constraints line or a companion.
+Pre-sorted input (a PRD, a brief from an upstream BMad skill): keep its separation; lift each requirement and constraint into its line with the source's id in parentheses (`R1 (FR-2, FR-5)`), overflow into companions. A program or initiative document from John states capabilities and rules rather than detailed requirements: each capability becomes a Requirements line and each rule a Constraints line, citing its id. Mixed input: sort each claim by the test in Load-bearing into a Requirements or Constraints line or a companion.
 
 The template's comments say what Requirements and Constraints hold at this altitude. Rich input: extract directly. Sparse input: name the gaps and walk them with the user one section at a time, Requirements then Constraints; if the user would rather move on, each gap is an `Open question:` line.
 
@@ -34,7 +34,7 @@ An unaddressed domain implication (healthcare silent on PHI) becomes an `Open qu
 
 A later memlog entry supersedes an earlier one. A new input, or a source changed since the memlog last cited it, is read against the memlog and the other sources; each disagreement, and any either/or never resolved, is put to the user as fix (a new memlog entry, the lines re-derived) or ignore (a `Decision:` line in Notes), never settled silently.
 
-When the user would rather work the idea itself out first, offer `bmad-product-brief` or `bmad-prd`.
+When the user would rather work the idea itself out first, offer John the Product Manager (`bmad-agent-pm`).
 
 ## Load-bearing
 
@@ -53,7 +53,7 @@ Load-bearing content that needs more than one line (tables, diagrams, long refer
 2. **Requirements say WHAT, not HOW.** Implementation goes in a companion.
 3. **Constraints bend design decisions.**
 4. **Boundaries name at least one thing that is out.**
-5. **The Outcome's signal is testable or demonstrable.**
+5. **Each `Done when` check is testable or demonstrable.**
 6. **Requirement ids are never reused or renumbered.**
 7. **Every load-bearing source claim lands in the ticket or a companion.**
 8. **Every sentence in the ticket, companions, and `.memlog.md` carries load-bearing content.**

@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -9,7 +10,7 @@ from datetime import date
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "tickets.py"
-CONFIG_UTILS = SCRIPT.parents[2] / "bmad" / "scripts" / "config_utils.py"
+CONFIG_UTILS = SCRIPT.parents[3] / "core-tools" / "bmad" / "scripts" / "config_utils.py"
 
 
 def ticket(
@@ -872,7 +873,7 @@ covers = ["R2", "R3"]
         self.seed()
         cases = (
             (ticket("todo", 1), "epic-pricing/tickets/story-contract.md"),
-            (ticket("draft", 1).replace("after: []", "after:\n  - 1"), "must be inline"),
+            (ticket("draft", 1).replace("after: []", "after: [1"), "story-contract.md: frontmatter is not valid YAML"),
             (ticket("draft", 1).replace("---\n\n# x", "\n# x"), "does not close"),
         )
         for text, message in cases:
@@ -1489,6 +1490,14 @@ covers = ["R2", "R3"]
                 self.assertIn("story-a-plan.md", out["problems"][0])
             self.assertEqual(self.files(self.next()["ready_to_start"]), [None])
 
+    def test_a_loose_plan_at_the_initiative_root_is_not_a_problem(self):
+        self.breakdown_epic()
+        (self.initiative / "plan-loose-tooling-fix.md").write_text(plan("", "in-progress"), encoding="utf-8")
+        for command in ("next", "status"):
+            r = run(command, str(self.initiative))
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertNotIn("problems", json.loads(r.stdout))
+
     def test_a_plan_with_an_unknown_status_blocks_its_ticket_until_mark_fixes_it(self):
         self.breakdown_epic()
         self.add("story-scaffold-plan.md", plan(1, "already-satisfied"))
@@ -1884,6 +1893,34 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
         self.assertIn("\ntracker_status: done\n", (backlog / "bug-x.md").read_text(encoding="utf-8"))
 
+    def test_with_no_folder_a_bare_number_does_not_fall_back_to_a_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 1, kind="bug"), backlog)
+        self.fails(run("find", "1", cwd=self.root), "bare number")
+        self.fails(run("mark", "1", "done", cwd=self.root), "bare number")
+        self.assertIn("bug-x.md in backlog", json.loads(run("find", "1", cwd=self.root).stderr)["error"])
+        self.assertEqual(self.ok(run("find", "bug-x.md", cwd=self.root))["folder"], "backlog")
+        self.assertEqual(self.ok(run("find", "epic-cart", "1", cwd=self.root))["file"], "story-scaffold.md")
+        self.fails(run("find", "9", cwd=self.root), "no ticket matches")
+
+    def test_mirror_does_not_take_a_bare_number_ref_from_the_backlog(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 9, kind="bug"), backlog)
+        self.write_store("jira")
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "9", "tracker_status": "done"}]))
+        self.assertEqual(self.ok(r)["mirrored"], [])
+        self.assertNotIn("tracker_status", (backlog / "bug-x.md").read_text(encoding="utf-8"))
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "bug-x", "tracker_status": "done"}]))
+        self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
+
+    def test_with_no_folder_a_numeric_tracker_id_still_finds_its_backlog_ticket(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"1234"'), backlog)
+        self.assertEqual(self.ok(run("find", "1234", cwd=self.root))["ref"], "bug-x.md")
+        self.fails(run("find", "7", cwd=self.root), "names no ticket in the initiative")
+        self.add("bug-y.md", ticket("draft", 1234, kind="bug", tracker_id='"7"'), backlog)
+        self.assertEqual(self.ok(run("find", "7", cwd=self.root))["ref"], "bug-y.md")
+
     def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
         backlog = self.add_backlog()
         (backlog / "bug-x.md").write_bytes(b"---\ntype: bug\ntitle: \xff\n---\n")
@@ -2019,6 +2056,72 @@ class ActiveInitiativeTests(TreeCase):
         self.configure("initiative-gone")
         self.configure("initiative-checkout", layer="config.user.toml")
         self.assertEqual(self.ok(run("next", cwd=self.root))["folder"], "initiative-checkout")
+
+
+def load_tickets():
+    spec = importlib.util.spec_from_file_location("tickets_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class FrontmatterTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.t = load_tickets()
+
+    def parse(self, block):
+        return self.t.parse_frontmatter(f"---\n{block}\n---\n", "x.md")
+
+    def test_values_read_as_yaml_reads_them(self):
+        for block, expected in (
+            ("status: done # merged in #42", {"status": "done"}),
+            ("status: 'built' # draft | built | done", {"status": "built"}),
+            ("after:   # no prerequisites", {"after": ""}),
+            ('title: "Fix #42"', {"title": "Fix #42"}),
+            ("link: https://example.com/#anchor", {"link": "https://example.com/#anchor"}),
+            ('after: ["a, b", c] # gates', {"after": ["a, b", "c"]}),
+            ("id: 6\nhitl: true", {"id": 6, "hitl": True}),
+            ("after: [1.10, 010, -2]", {"after": ["1.10", "010", -2]}),
+            ("blocked_at: 2026-02-30\nrefined: yes", {"blocked_at": "2026-02-30", "refined": "yes"}),
+            ("after:\n  - 1\n  - x", {"after": [1, "x"]}),
+            ("notes: |\n  a\n  - b", {"notes": "a\n- b\n"}),
+        ):
+            with self.subTest(block=block):
+                self.assertEqual(self.parse(block), expected)
+
+    def test_invalid_yaml_names_the_file(self):
+        with self.assertRaisesRegex(
+            self.t.TicketError, r"^x\.md: frontmatter is not valid YAML at line 2: mapping values"
+        ):
+            self.parse("title: Fix: login")
+
+    def test_an_edit_changes_only_its_line(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "plan.md"
+            path.write_text("---\nstatus: 'blocked' # was\nblocked_reason: x\nnotes: keep # me\n---\n")
+            self.t.edit_frontmatter(path, {"status": "done", "blocked_reason": "", "assignee": '"a"'})
+            self.assertEqual(path.read_text(), '---\nstatus: done\nnotes: keep # me\nassignee: "a"\n---\n')
+
+    def test_an_edit_it_cannot_make_cleanly_is_refused_unwritten(self):
+        for block, values in (
+            ("status: blocked\nblocked_reason: |\n  first\n\n  second", {"status": "done", "blocked_reason": ""}),
+            ('status: blocked\n"blocked_reason": x', {"blocked_reason": ""}),
+            ("assignee: &owner alex\nblocked_reason: *owner", {"assignee": ""}),
+            ("after:\n- 1\n- 2", {"after": "[3]"}),
+            ("status: x", {"status": "a: b"}),
+        ):
+            with self.subTest(block=block), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "plan.md"
+                path.write_text(f"---\n{block}\n---\n")
+                with self.assertRaisesRegex(self.t.TicketError, "by hand"):
+                    self.t.edit_frontmatter(path, values)
+                self.assertEqual(path.read_text(), f"---\n{block}\n---\n")
+
+    def test_a_quoted_value_reads_back_exactly(self):
+        for value in ("a   # b", "line\x85break\u2028and\u2029more", "del\x7f c1\x9f", 'it\'s "x" \\ y'):
+            with self.subTest(value=value):
+                self.assertEqual(self.parse(f"reason: {self.t.quoted(value)}"), {"reason": value})
 
 
 if __name__ == "__main__":
