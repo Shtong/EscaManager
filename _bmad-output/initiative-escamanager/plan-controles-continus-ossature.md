@@ -3,7 +3,7 @@ title: 'Contrôles continus de l'ossature — ruff, mypy strict, pytest-cov, gar
 type: feature
 ticket: ''
 created: '2026-11-21'
-status: built
+status: in-review
 baseline_revision: c32fe1bca17e595e74aa435834a13d5bd37e52e4
 route: full
 route_source: auto
@@ -84,6 +84,7 @@ context:
 - 21/11/2026 — Le sabotage « seuil + 1 » supposait une couverture entre 90 et 100 ; les tests demandés portent le domaine à 100 %, donc 91 passe aussi. Mécanisme prouvé autrement : une exécution des seules gardes mesure 0 % et échoue (« Coverage failure… fail-under=90 », code de sortie 1), sans aucun drapeau CI.
 - 21/11/2026 — Vérifications rejouées par l'orchestrateur : `pip install -e ".[dev]"` (planchers exacts résolus), `ruff check .`, `ruff format --check .`, `mypy`, pytest des gardes et du domaine (15 passed, 100 % ≥ 90), pytest de l'application sur MySQL (6 passed), `makemigrations --check` après reformatage (« No changes detected »).
 - 21/11/2026 — Renégociation du bloc figéré par l'humain : ruff basculé sur son jeu par défaut, épinglé `==0.17.6` ; exemption RUF012 pour `**/migrations/*` (idiome des migrations Django générées) ; `check=False` explicite dans `test_demarrage.py` (les 3 tests rejoués verts — ils attendent un code non nul, le drapeau explicite est le comportement réel). Vérification complète rejouée après bascule.
+- 21/11/2026 — Demandes du mainteneur avant poussée : passe humaine de clarification (commentaires réduits au présent, références AD sorties du code, README resserré) puis quatre règles inscrites par bmad-project-context dans le bloc AGENTS.md (pas de tiret cadratin, pas de guillemets typographiques français, code au présent seul, pas de références AD en commentaire de code). Conséquences exécutées sur la branche : nouvelle garde `tests/test_typographie.py` (dans la CI, périmètre club hors `_bmad-output/`), balayage des 139 occurrences existantes (code, commentaires, gabarits, README, CI, réglages), commande CI étendue à la garde, espace finale corrigée dans `composition.py` (attrapée par `ruff format --check`).
 
 ## Plan Change Log
 

@@ -1,16 +1,17 @@
-"""Garde AD-3 : les apps Django ne s'importent jamais entre elles.
+"""Garde d'imports des apps : les apps Django ne s'importent jamais entre
+elles.
 
-Le parcours se fait par AST — aucun code de l'application n'est exécuté —
-sur tous les fichiers Python des apps : dossiers de « application/ »
-portant un « __init__.py », hors « config », seule habilitée à composer
-les apps entre elles (AD-10). Une app future est donc couverte
+Le parcours se fait par AST, aucun code de l'application n'est exécuté,
+sur tous les fichiers Python des apps : dossiers de 'application/'
+portant un '__init__.py', hors 'config', seule habilitée à composer
+les apps entre elles. Une app ajoutée est donc couverte
 automatiquement, sans liste à maintenir. Sont traqués l'import direct,
 l'import relatif qui s'échappe vers une autre app et l'import dynamique
-à chaîne constante (« importlib.import_module », « __import__ ») ; une
+à chaîne constante ('importlib.import_module', '__import__') ; une
 app peut s'importer elle-même, importer le domaine, Django ou la
 bibliothèque standard. En cas d'import croisé, l'échec nomme précisément
-le fichier et le module. Les migrations relèvent de la revue de fusion
-(AD-8), pas de cette garde.
+le fichier et le module. Les migrations relèvent de la revue de fusion,
+pas de cette garde.
 """
 
 import ast
@@ -22,9 +23,9 @@ RACINE_APPLICATION = Path(__file__).resolve().parents[1] / "application"
 
 
 def _apps_de(racine: Path) -> list[str]:
-    """Apps Django du projet : dossiers portant un « __init__.py », hors
-    « config » qui n'est pas une app — seule elle compose les apps (AD-10).
-    Une app ajoutée demain est ainsi couverte sans toucher à la garde."""
+    """Apps Django du projet : dossiers portant un '__init__.py', hors
+    'config' qui n'est pas une app, seule elle compose les apps.
+    Une app ajoutée est couverte sans toucher à la garde."""
     return sorted(
         dossier.name
         for dossier in racine.iterdir()
@@ -37,8 +38,8 @@ def _apps_de(racine: Path) -> list[str]:
 
 
 def _est_import_dynamique(noeud: ast.Call) -> bool:
-    """Appel « importlib.import_module(…) », « import_module(…) » (après un
-    « from importlib import import_module ») ou « __import__(…) »."""
+    """Appel 'importlib.import_module(...)', 'import_module(...)' (après un
+    'from importlib import import_module') ou '__import__(...)'."""
     fonction = noeud.func
     if isinstance(fonction, ast.Name):
         return fonction.id in {"import_module", "__import__"}
@@ -51,7 +52,7 @@ def _est_import_dynamique(noeud: ast.Call) -> bool:
 
 
 def _chaine_constante(noeud: ast.Call) -> str | None:
-    """Premier argument s'il est une chaîne littérale — un module calculé
+    """Premier argument s'il est une chaîne littérale : un module calculé
     au moment de l'appel échappe à l'AST et n'est pas traqué."""
     premier = noeud.args[0] if noeud.args else None
     if isinstance(premier, ast.Constant) and isinstance(premier.value, str):
@@ -62,9 +63,9 @@ def _chaine_constante(noeud: ast.Call) -> str | None:
 def _imports_croises_de(
     fichier: Path, paquet: list[str], autres_apps: set[str]
 ) -> list[str]:
-    """Modules d'une autre app importés par un fichier — import direct,
-    import relatif ou appel dynamique à chaîne constante. « paquet » est
-    le paquet du fichier (par ex. « application.comptes.migrations »),
+    """Modules d'une autre app importés par un fichier : import direct,
+    import relatif ou appel dynamique à chaîne constante. 'paquet' est
+    le paquet du fichier (par ex. 'application.comptes.migrations'),
     nécessaire pour résoudre les imports relatifs."""
     arbre = ast.parse(fichier.read_text(encoding="utf-8"))
     croises: list[str] = []
@@ -87,13 +88,13 @@ def _imports_croises_de(
                 if noeud.module:
                     examiner(noeud.module)
                     if noeud.module == "application":
-                        # « from application import <app> » importe
-                        # « application.<app> » — même règle, autre syntaxe.
+                        # 'from application import <app>' importe
+                        # 'application.<app>' : même règle, autre syntaxe.
                         for alias in noeud.names:
                             examiner(f"application.{alias.name}")
             else:
                 # Import relatif, résolu depuis le paquet du fichier : un
-                # « from ..comptes import … » écrit depuis une autre app
+                # 'from ..comptes import ...' écrit depuis une autre app
                 # est un import croisé déguisé, pas un détail de syntaxe.
                 base = paquet[: max(0, len(paquet) - (noeud.level - 1))]
                 cible = base + (noeud.module.split(".") if noeud.module else [])
@@ -112,7 +113,7 @@ def _imports_croises_de(
 
 def test_les_apps_ne_s_importent_pas_entre_elles() -> None:
     apps = _apps_de(RACINE_APPLICATION)
-    assert apps, "aucune app trouvée sous application/ — la garde ne protège rien"
+    assert apps, "aucune app trouvée sous application/ : la garde ne protège rien"
 
     violations: list[str] = []
     for app in apps:
@@ -123,20 +124,18 @@ def test_les_apps_ne_s_importent_pas_entre_elles() -> None:
             paquet = ["application", app, *sous_dossiers]
             chemin = fichier.relative_to(RACINE_APPLICATION.parent)
             for module in _imports_croises_de(fichier, paquet, autres_apps):
-                violations.append(f"{chemin} importe « {module} »")
+                violations.append(f"{chemin} importe '{module}'")
 
-    assert not violations, (
-        "AD-3 violé — les apps ne s'importent jamais entre elles : "
-        + " ; ".join(violations)
+    assert not violations, "Les apps ne s'importent jamais entre elles : " + " ; ".join(
+        violations
     )
 
 
 def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> None:
-    """Matrice « Import croisé », chemin en échec : des apps factices —
-    dont « saisons », absente du dépôt aujourd'hui — dont l'une importe
-    l'autre, directement, en relatif ou par un appel dynamique à chaîne
-    constante, font échouer la garde en nommant précisément le fichier et
-    le module."""
+    """Chemin en échec : des apps factices, dont 'saisons', absente du
+    dépôt, dont l'une importe l'autre, directement, en relatif ou par un
+    appel dynamique à chaîne constante, font échouer la garde en nommant
+    précisément le fichier et le module."""
     application_factice = tmp_path / "application"
     for app in ("comptes", "saisons"):
         dossier = application_factice / app
@@ -163,13 +162,13 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
     assert "application.comptes.modeles" in message
     assert "application.comptes.depots" in message
     assert "application.comptes.services" in message
-    assert "« application.comptes »" in message
+    assert "'application.comptes'" in message
 
 
 def test_les_imports_licites_passent(tmp_path, monkeypatch) -> None:
-    """Matrice « Imports licites » : une app peut s'importer elle-même,
+    """Imports licites : une app peut s'importer elle-même,
     importer le domaine, Django ou la bibliothèque standard, en direct ou
-    en relatif ; seule « config » compose les apps (AD-10) — la garde
+    en relatif ; seule 'config' compose les apps, la garde
     reste verte."""
     application_factice = tmp_path / "application"
     for app in ("comptes", "saisons"):

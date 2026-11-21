@@ -1,9 +1,7 @@
-"""Entité « Compte » — première entité du catalogue AD-9, propriété de l'app
-« comptes ».
+"""Entité Compte, propriété de l'app comptes.
 
 Volontairement minimale : un compte y est identifié par son adresse de
-courriel, sans aucune logique d'authentification — celle-ci appartient aux
-stories suivantes de l'épic comptes.
+courriel, sans aucune logique d'authentification.
 """
 
 from dataclasses import dataclass

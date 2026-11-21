@@ -1,5 +1,4 @@
-# Base MySQL 8.4 locale d'EscaManager — la seule base d'exécution pendant
-# les premières phases du développement (jamais SQLite, même en local — AD-7).
+# Base MySQL 8.4 locale d'EscaManager.
 #
 #   docker compose up -d --wait
 #
@@ -7,7 +6,7 @@
 #   DATABASE_URL=mysql://root:root@127.0.0.1:3306/escamanager
 #
 # Le compte root n'existe que dans ce conteneur de développement jetable :
-# il est le seul à pouvoir créer la base de test « test_* » utilisée par pytest.
+# il est le seul à pouvoir créer la base de test 'test_*' utilisée par pytest.
 
 services:
   mysql:

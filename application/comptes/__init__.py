@@ -1,1 +1,1 @@
-"""App « comptes » — épic 1 : comptes et permissions (AD-9)."""
+"""App comptes : comptes et permissions."""

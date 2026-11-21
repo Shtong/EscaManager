@@ -1,6 +1,4 @@
-"""Point d'entrée WSGI standard — déployable sur toute infrastructure qui
-exécute Python, sans rien modifier (AD-15).
-"""
+"""Point d'entrée WSGI standard."""
 
 import os
 

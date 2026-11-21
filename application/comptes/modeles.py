@@ -1,10 +1,3 @@
-"""Persistance des comptes — adaptateur de l'entité « Compte » du domaine.
-
-Aucune règle métier ici (AD-2) : les modèles ne portent que les données ;
-les lectures passent par le domaine, les écritures passeront par ses
-services.
-"""
-
 from django.db import models
 
 

@@ -1,4 +1,4 @@
-"""Tests du domaine — sans aucune base : un faux dépôt suffit (AD-1)."""
+"""Tests du domaine, sans aucune base : un faux dépôt suffit."""
 
 import pytest
 

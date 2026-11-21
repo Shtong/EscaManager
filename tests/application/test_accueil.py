@@ -1,4 +1,4 @@
-"""Tests de la page d'accueil — sur MySQL, jamais SQLite (AD-7).
+"""Tests de la page d'accueil, sur MySQL : jamais SQLite.
 
 Prouvent la chaîne complète : page → domaine → dépôt → ORM → MySQL.
 """
@@ -37,8 +37,8 @@ def _compter_base_injoignable(self) -> int:
 def test_accueil_base_injoignable_repond_500_journalisee(
     client, monkeypatch, caplog
 ) -> None:
-    """Matrice « Base injoignable » : une erreur de connexion remonte du
-    port ; la page rend une erreur 500 standard Django, journalisée —
+    """Base injoignable : une erreur de connexion remonte du
+    port ; la page rend une erreur 500 standard Django, journalisée,
     jamais d'exception avalée."""
     monkeypatch.setattr(DepotComptesDjango, "compter", _compter_base_injoignable)
     # Attribut du client (pas un paramètre d'appel) : sans lui, l'exception

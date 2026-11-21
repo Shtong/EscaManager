@@ -1,6 +1,6 @@
-"""Tests de l'entité « Compte » — première entité du catalogue (AD-9).
+"""Tests de l'entité Compte.
 
-Sans aucune base : le domaine est un paquet pur (AD-1), l'entité se teste
+Sans aucune base : le domaine est un paquet pur, l'entité se teste
 telle quelle.
 """
 
@@ -19,9 +19,8 @@ def test_un_compte_porte_le_courriel_donne() -> None:
 
 
 def test_un_compte_refuse_toute_affectation() -> None:
-    """Gel : l'entité est figée à la construction — une écriture directe
-    d'attribut est refusée ; les mutations à venir passeront par un
-    service du domaine (AD-4)."""
+    """Gel : l'entité est figée à la construction, une écriture directe
+    d'attribut est refusée."""
     compte = Compte(courriel="secretaire@scb-escalade.fr")
 
     with pytest.raises(dataclasses.FrozenInstanceError):

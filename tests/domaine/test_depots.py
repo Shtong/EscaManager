@@ -1,4 +1,4 @@
-"""Tests du contrat du port « DepotComptes » (AD-2, AD-5) — sans aucune
+"""Tests du contrat du port DepotComptes, sans aucune
 base : un port est une interface, seule l'application l'implémente.
 """
 
@@ -15,7 +15,7 @@ def test_le_port_ne_peut_pas_etre_instancie() -> None:
 
 
 def test_la_methode_du_port_n_est_pas_implementee() -> None:
-    """Contrat du port : une implémentation doit fournir « compter » — la
+    """Contrat du port : une implémentation doit fournir 'compter', la
     méthode de base refuse tout appel résiduel plutôt que de mentir sur
     le décompte."""
 
