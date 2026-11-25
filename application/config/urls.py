@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from application.comptes.vues import (
+from application.comptes.views import (
     Connexion,
     Deconnexion,
     DemandeReinitialisation,

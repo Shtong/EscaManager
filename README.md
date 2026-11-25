@@ -99,7 +99,7 @@ domaine/          bibliothèque de domaine, paquet pur (AD-1) : entités, ports,
 application/      projet Django, l'unique adaptatrice
   config/         réglages (variables d'environnement seules), URLs, câblage port/adaptateur (AD-10)
   comptes/        épic 1 : comptes, modèle utilisateur, dépôt ORM, jetons, formulaires, parcours
-  gabarits/       gabarits HTML en français, sans JavaScript
+  templates/      gabarits HTML en français, sans JavaScript
   static/         feuilles de style
 tests/            gardes d'imports (AD-1, AD-3), tests du domaine (sans base), tests de l'application (MySQL)
 ```

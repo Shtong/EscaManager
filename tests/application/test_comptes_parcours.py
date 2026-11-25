@@ -15,7 +15,7 @@ from django.test import Client
 from django.urls import reverse
 
 from application.comptes.jetons import fabriquer_jeton_confirmation
-from application.comptes.modeles import CompteDjango
+from application.comptes.models import CompteDjango
 from application.config.composition import depot_comptes
 from domaine.services.comptes import confirmer_compte, inscrire_compte
 

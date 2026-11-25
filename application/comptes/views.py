@@ -22,7 +22,7 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 
-from application.comptes.formulaires import (
+from application.comptes.forms import (
     MESSAGE_COURRIEL_DEJA_UTILISE,
     FormulaireConnexion,
     FormulaireDemandeReinitialisation,

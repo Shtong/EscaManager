@@ -10,7 +10,7 @@ entre deux lectures est un compte inconnu.
 
 from django.db import IntegrityError, transaction
 
-from application.comptes.modeles import CompteDjango
+from application.comptes.models import CompteDjango
 from domaine.entites.compte import Compte
 from domaine.ports.depots import DepotComptes
 from domaine.services.comptes import CompteInconnu, CourrielDejaUtilise
