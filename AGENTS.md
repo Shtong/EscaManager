@@ -1,5 +1,5 @@
 <!-- bmad:context -->
-<!-- Verified 2026-11-21 against 87a457d. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
+<!-- Verified 2026-11-25 against 214d204. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
 
 ## EscaManager
 
@@ -32,7 +32,7 @@ Gestion en ligne des adhésions du SCB Escalade, club d'escalade à but non lucr
 
 ## Conventions qui divergent des défauts
 
-- Symboles, apps Django et URLs en français, snake_case : apps `comptes`, `saisons`, `adhesions`, `membres`, `federation` ; textes de l'interface en français direct, sans catalogue i18n.
+- Symboles, apps Django et URLs en français, snake_case ; fichiers du squelette Django aux noms standard (`models.py`, `views.py`, `forms.py`, `templates/`), le français ne déplace pas ce que Django attend ; modules sans équivalent Django en français (`depots.py`, `jetons.py`) : apps `comptes`, `saisons`, `adhesions`, `membres`, `federation` ; textes de l'interface en français direct, sans catalogue i18n.
 - `domaine/` n'importe que la bibliothèque standard Python : aucun import Django, HTTP, SQL ou client externe (garde d'imports en CI, AD-1).
 - Les apps de `application/` ne s'importent jamais entre elles : le partage passe par `domaine/`, la composition par `application/config/` (garde d'imports en CI, AD-3, AD-10).
 - Toute écriture d'une entité passe par un service du domaine en transaction ; modèles et vues Django ne portent aucune règle métier.
