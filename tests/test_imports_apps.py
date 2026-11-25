@@ -7,7 +7,8 @@ portant un '__init__.py', hors 'config', seule habilitée à composer
 les apps entre elles. Une app ajoutée est donc couverte
 automatiquement, sans liste à maintenir. Sont traqués l'import direct,
 l'import relatif qui s'échappe vers une autre app et l'import dynamique
-à chaîne constante ('importlib.import_module', '__import__') ; une
+à chaîne constante ('importlib.import_module',
+'importlib.util.import_module', '__import__') ; une
 app peut s'importer elle-même, importer le domaine, Django ou la
 bibliothèque standard. En cas d'import croisé, l'échec nomme précisément
 le fichier et le module. Les migrations relèvent de la revue de fusion,
@@ -38,25 +39,39 @@ def _apps_de(racine: Path) -> list[str]:
 
 
 def _est_import_dynamique(noeud: ast.Call) -> bool:
-    """Appel 'importlib.import_module(...)', 'import_module(...)' (après un
+    """Appel 'importlib.import_module(...)',
+    'importlib.util.import_module(...)', 'import_module(...)' (après un
     'from importlib import import_module') ou '__import__(...)'."""
     fonction = noeud.func
     if isinstance(fonction, ast.Name):
         return fonction.id in {"import_module", "__import__"}
+    if not isinstance(fonction, ast.Attribute) or fonction.attr != "import_module":
+        return False
+    base = fonction.value
+    if isinstance(base, ast.Name):
+        return base.id == "importlib"
     return (
-        isinstance(fonction, ast.Attribute)
-        and isinstance(fonction.value, ast.Name)
-        and fonction.value.id == "importlib"
-        and fonction.attr == "import_module"
+        isinstance(base, ast.Attribute)
+        and base.attr == "util"
+        and isinstance(base.value, ast.Name)
+        and base.value.id == "importlib"
     )
 
 
 def _chaine_constante(noeud: ast.Call) -> str | None:
-    """Premier argument s'il est une chaîne littérale : un module calculé
-    au moment de l'appel échappe à l'AST et n'est pas traqué."""
+    """Chaîne littérale du premier argument ou du mot-clé 'name' : un
+    module calculé au moment de l'appel échappe à l'AST et n'est pas
+    traqué."""
     premier = noeud.args[0] if noeud.args else None
     if isinstance(premier, ast.Constant) and isinstance(premier.value, str):
         return premier.value
+    for motcle in noeud.keywords:
+        if (
+            motcle.arg == "name"
+            and isinstance(motcle.value, ast.Constant)
+            and isinstance(motcle.value.value, str)
+        ):
+            return motcle.value.value
     return None
 
 
@@ -145,9 +160,13 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
     (application_factice / "saisons" / "vues.py").write_text(
         "import application.comptes.modeles\n"
         "import importlib\n"
+        "import importlib.util\n"
         "from application import comptes\n"
         "from ..comptes import services\n"
+        "from importlib import import_module\n"
         'importlib.import_module("application.comptes.depots")\n'
+        'importlib.util.import_module("application.comptes.requetes")\n'
+        'import_module(name="application.comptes.vues")\n'
         '__import__("application.comptes.services")\n',
         encoding="utf-8",
     )
@@ -161,6 +180,8 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
     assert "vues.py" in message
     assert "application.comptes.modeles" in message
     assert "application.comptes.depots" in message
+    assert "application.comptes.requetes" in message
+    assert "application.comptes.vues" in message
     assert "application.comptes.services" in message
     assert "'application.comptes'" in message
 
@@ -179,12 +200,16 @@ def test_les_imports_licites_passent(tmp_path, monkeypatch) -> None:
     (application_factice / "saisons" / "vues.py").write_text(
         "import json\n"
         "import importlib\n"
+        "import importlib.util\n"
         "from django.shortcuts import render\n"
         "from application.saisons.modeles import Saison\n"
         "from domaine.requetes import compter_comptes\n"
         "from . import vues_locales\n"
         "from ..config import composition\n"
-        'importlib.import_module("application.saisons.depots")\n',
+        "from importlib import import_module\n"
+        'importlib.import_module("application.saisons.depots")\n'
+        'importlib.util.import_module("application.saisons.requetes")\n'
+        'import_module(name="application.saisons.vues")\n',
         encoding="utf-8",
     )
     config = application_factice / "config"

@@ -19,7 +19,7 @@ docker compose up -d --wait
 
 ## Variables d'environnement
 
-Toute la configuration passe par des variables d'environnement. 
+Toute la configuration passe par des variables d'environnement.
 En local, créez un fichier `.env` à la racine du dépôt (non suivi par git).
 Il sera chargé au démarrage, sans pour autant écraser les variables d'environnement déjà existantes.
 
@@ -43,6 +43,40 @@ DATABASE_URL=mysql://root:root@127.0.0.1:3306/escamanager
 python manage.py migrate
 python manage.py runserver
 ```
+
+## Tests
+
+Les gardes et les tests du domaine tournent sans aucune base ; le `.env`
+local fournit les variables que les réglages exigent :
+
+```bash
+pytest tests/test_imports_domaine.py tests/test_imports_apps.py tests/test_typographie.py tests/domaine -q --cov=domaine --cov-report=term-missing
+```
+
+Les tests de l'application exigent la base MySQL locale :
+
+```bash
+docker compose up -d --wait
+pytest tests/application -q
+```
+
+Aucune migration ne doit manquer au dépôt :
+
+```bash
+python manage.py makemigrations --check --dry-run
+```
+
+## CI (GitHub Actions)
+
+Chaque fusion traverse la CI, et seulement après CI verte. Deux jobs :
+
+- Domaine et qualité, sans base : lint et format (`ruff check .` puis
+  `ruff format --check .`), typage strict du domaine (`mypy`), gardes
+  d'imports et de typographie, tests du domaine couverts au seuil de
+  90 pour cent.
+- Application, sur MySQL 8.4 comme en production (jamais SQLite) :
+  vérification qu'aucune migration ne manque, puis tests de
+  l'application.
 
 ## Structure du dépôt
 

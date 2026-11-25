@@ -1,4 +1,4 @@
-"""Requêtes de lecture du domaine (AD-2, AD-12).
+"""Requêtes de lecture du domaine.
 
 Toute lecture affichée par l'application passe par ici : une vue ne compte
 jamais les lignes elle-même.

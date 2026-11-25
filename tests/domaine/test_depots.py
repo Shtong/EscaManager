@@ -9,7 +9,7 @@ from domaine.ports.depots import DepotComptes
 
 def test_le_port_ne_peut_pas_etre_instancie() -> None:
     """Un port est abstrait : le domaine ne fournit aucune implémentation,
-    seule l'application câble un dépôt concret (AD-10)."""
+    seule l'application câble un dépôt concret."""
     with pytest.raises(TypeError):
         DepotComptes()
 

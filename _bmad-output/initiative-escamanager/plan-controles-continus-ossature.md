@@ -3,7 +3,7 @@ title: 'Contrôles continus de l'ossature — ruff, mypy strict, pytest-cov, gar
 type: feature
 ticket: ''
 created: '2026-11-21'
-status: in-review
+status: built
 baseline_revision: c32fe1bca17e595e74aa435834a13d5bd37e52e4
 route: full
 route_source: auto
@@ -85,6 +85,7 @@ context:
 - 21/11/2026 — Vérifications rejouées par l'orchestrateur : `pip install -e ".[dev]"` (planchers exacts résolus), `ruff check .`, `ruff format --check .`, `mypy`, pytest des gardes et du domaine (15 passed, 100 % ≥ 90), pytest de l'application sur MySQL (6 passed), `makemigrations --check` après reformatage (« No changes detected »).
 - 21/11/2026 — Renégociation du bloc figéré par l'humain : ruff basculé sur son jeu par défaut, épinglé `==0.17.6` ; exemption RUF012 pour `**/migrations/*` (idiome des migrations Django générées) ; `check=False` explicite dans `test_demarrage.py` (les 3 tests rejoués verts — ils attendent un code non nul, le drapeau explicite est le comportement réel). Vérification complète rejouée après bascule.
 - 21/11/2026 — Demandes du mainteneur avant poussée : passe humaine de clarification (commentaires réduits au présent, références AD sorties du code, README resserré) puis quatre règles inscrites par bmad-project-context dans le bloc AGENTS.md (pas de tiret cadratin, pas de guillemets typographiques français, code au présent seul, pas de références AD en commentaire de code). Conséquences exécutées sur la branche : nouvelle garde `tests/test_typographie.py` (dans la CI, périmètre club hors `_bmad-output/`), balayage des 139 occurrences existantes (code, commentaires, gabarits, README, CI, réglages), commande CI étendue à la garde, espace finale corrigée dans `composition.py` (attrapée par `ruff format --check`).
+- 25/11/2026 — Passe 2 de la revue quick reprise après interruption (l'implémenteur d'origine est perdu, correctifs appliqués par l'orchestrateur) : sections Tests et CI rétablies dans le README (supprimées au lieu d'être mises à jour), deux graphies d'import dynamique ajoutées à la garde AD-3 (« importlib.util.import_module », mot-clé « name »), références AD-x sorties de `tests/domaine/test_depots.py` et `domaine/requetes.py`, grammaire et vocabulaire français rétablis dans `composition.py` et `depots.py`, espace finale du README supprimée. Vérifications rejouées vertes : `ruff check .`, `ruff format --check .` (31 fichiers), `mypy` (7 fichiers), 17 tests du domaine à 100 % (seuil 90), 6 tests de l'application sur MySQL, `makemigrations --check` « No changes detected ».
 
 ## Plan Change Log
 
@@ -94,6 +95,16 @@ context:
 
 - Passe 1 (lens `quick`, 21/11/2026) — 0 high / 0 medium / 1 low / 0 false / 0 maybe-false.
 - **low** — rejeté (règle : un correctif qui édite le plan de ce build est rejeté) — `_bmad-output/initiative-escamanager/plan-controles-continus-ossature.md`, section Verification : la ligne « saborder `fail_under` (seuil + 1) doit faire échouer » promet un échec que l'état livré ne peut plus produire (les tests demandés portent le domaine à 100 %, donc 91 passe) ; vérifié réel par l'orchestrateur ; le mécanisme de seuil est prouvé par substitution (gardes seules → 0 % mesuré → échec, code 1) et la substitution est consignée dans Implementation Notes ; aucun impact code, CI ni utilisateurs.
+- Passe 2 (lens `quick`, 25/11/2026 — reprise après interruption : le diff avait grandi du balayage de typographie et de la simplification de la doc) — 0 high / 2 medium / 6 low / 1 false / 0 maybe-false.
+- **medium** — accepté (patch appliqué) — `README.md` : les sections Tests et CI ont été supprimées au lieu d'être mises à jour, alors que la tâche cochée promettait « commandes des contrôles pour les bénévoles, description à jour des deux jobs » ; vérifié par lecture du README livré (aucune des deux sections, les commandes ne vivent plus que dans AGENTS.md, tourné vers les agents). Sections Tests et CI rétablies.
+- **medium** — accepté (patch appliqué) — `tests/test_imports_apps.py` : la garde des imports dynamiques manque « importlib.util.import_module(…) » (chaîne d'attributs non traquée) et « import_module(name=…) » (mot-clé jamais lu), deux graphies que la matrice figée couvre par « importlib, __import__ » ; vérifié par lecture du matcher. Les deux graphies sont traquées, matrices du chemin en échec et des imports licites étendues.
+- **low** — accepté (patch appliqué) — `tests/domaine/test_depots.py:12` : « (AD-10) » survit dans un fichier que ce diff crée, contredisant la règle inscrite par ce même diff et la note « références AD sorties du code » ; vérifié par grep, deux occurrences seulement restent en code club. La référence sort du docstring.
+- **low** — accepté (patch appliqué) — `domaine/requetes.py:1` : « (AD-2, AD-12) » survit au balayage déclaré sur « code, commentaires » ; vérifié par lecture, le fichier était absent du diff mais la règle nouvelle le couvre. La référence sort du docstring.
+- **low** — accepté (patch appliqué) — `application/config/composition.py:3` : « C'est ici, que » est cassé grammaticalement, la suppression de « et seulement ici » a laissé sa virgule ; vérifié par lecture. Virgule retirée.
+- **low** — accepté (patch appliqué) — `application/config/composition.py:3-4,12` et `application/comptes/depots.py:1` : « repository » et « factory » ont remplacé « dépôt » et « fabrique », contredisant « français partout » (bloc figé) et le reste du dépôt qui dit « dépôt » ; vérifié par lecture. Vocabulaire français rétabli.
+- **low** — accepté (patch appliqué) — `README.md:22` : espace finale introduite par ce diff, qu'aucun contrôle n'attrape (ruff ne lit pas le Markdown) ; vérifiée par grep. Espace supprimée.
+- **low** — rejeté (défaut dormant, correctif = politique que le plan ne tranche pas) — `tests/test_typographie.py:44-49` : un fichier binaire posé sous application/ ferait échouer la garde (« fichier illisible en UTF-8 ») sans ligne ni caractère corrigeables ; vérifié : l'arbre livré ne contient que du texte (static/ n'a qu'une feuille CSS), l'échec est nominatif et auto-explicite, et le plus petit correctif (politique d'exclusion des binaires) n'est spécifié nulle part.
+- **false** — rejeté (réfutation) — `tests/domaine/test_compte.py:14` : « donne » serait une faute pour « donné » ; réfuté par la convention du dépôt, les symboles plient les accents (« etre_instancie », « implementee », « egaux » dans ces mêmes fichiers) : « donne » est le pli correct de « donné », cohérent avec les précédents.
 
 ## Design Notes
 

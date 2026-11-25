@@ -1,4 +1,4 @@
-"""Implémentation du repository DepotComptes sur l'ORM Django.
+"""Implémentation du port DepotComptes sur l'ORM Django.
 
 Le domaine déclare l'interface dans ``domaine/ports/depots.py``.
 """
