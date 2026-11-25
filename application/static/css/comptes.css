@@ -1,0 +1,137 @@
+/* EscaManager : parcours des comptes (navigation, messages, formulaires).
+   Mobile first : aucune largeur fixe, tout reste lisible vers 375 px. */
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.9rem;
+  margin-left: auto;
+}
+
+.menu a {
+  color: #e6ecf3;
+  text-decoration: none;
+}
+
+.menu a:hover,
+.menu a:focus {
+  text-decoration: underline;
+}
+
+.form-deconnexion {
+  display: inline;
+  margin: 0;
+}
+
+.lien-bouton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #e6ecf3;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lien-bouton:hover,
+.lien-bouton:focus {
+  text-decoration: underline;
+}
+
+.messages {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.messages li {
+  padding: 0.7rem 1rem;
+  border-radius: 0.3rem;
+}
+
+.message-success {
+  background: #e9f2e5;
+  border-left: 0.35rem solid #4c7a3d;
+}
+
+.message-error,
+.erreurs-formulaire {
+  background: #f8e9e6;
+  border-left: 0.35rem solid var(--accent);
+  padding: 0.7rem 1rem;
+  border-radius: 0.3rem;
+}
+
+.introduction {
+  color: var(--encre-douce);
+}
+
+.formulaire {
+  max-width: 26rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--bord);
+  border-radius: 0.4rem;
+}
+
+.champ {
+  margin-bottom: 0.9rem;
+}
+
+.champ label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.champ input {
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid var(--bord);
+  border-radius: 0.3rem;
+  font-size: 1rem;
+}
+
+.champ ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+button {
+  padding: 0.55rem 1rem;
+  background: var(--fonce);
+  color: #fff;
+  border: 0;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover,
+button:focus {
+  background: var(--accent);
+}
+
+.bouton {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  background: var(--fonce);
+  color: #fff;
+  border-radius: 0.3rem;
+  text-decoration: none;
+}
+
+.apres-formulaire {
+  margin-top: 1rem;
+}
+
+.liens-espace {
+  margin: 0 0 1rem;
+}
+
+.form-espace {
+  display: inline;
+}

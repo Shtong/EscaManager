@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block titre %}Créer un compte{% endblock %}
+
+{% block contenu %}
+  <h1>Créer un compte</h1>
+  <p class="introduction">
+    Votre compte servira à suivre vos adhésions au club. L'adresse de
+    courriel est la seule information demandée.
+  </p>
+  <form method="post" class="formulaire">
+    {% csrf_token %}
+    {% if formulaire.non_field_errors %}
+      <div class="erreurs-formulaire">{{ formulaire.non_field_errors }}</div>
+    {% endif %}
+    {% for champ in formulaire %}
+      <div class="champ">
+        {{ champ.label_tag }}
+        {{ champ }}
+        {{ champ.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Créer mon compte</button>
+  </form>
+  <p class="apres-formulaire">
+    Vous avez déjà un compte ?
+    <a href="{% url 'connexion' %}">Connectez-vous</a>.
+  </p>
+{% endblock %}

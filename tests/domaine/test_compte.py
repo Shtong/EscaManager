@@ -27,6 +27,14 @@ def test_un_compte_refuse_toute_affectation() -> None:
         compte.courriel = "autre@scb-escalade.fr"
 
 
+def test_un_compte_frais_est_inactif() -> None:
+    """Un compte tout juste inscrit n'est pas actif : la confirmation de
+    l'adresse de courriel l'activera."""
+    compte = Compte(courriel="adherent@scb-escalade.fr")
+
+    assert compte.actif is False
+
+
 def test_deux_comptes_de_meme_courriel_sont_egaux() -> None:
     """Égalité : deux comptes portant le même courriel sont le même
     compte, quel que soit le chemin qui les a construits."""

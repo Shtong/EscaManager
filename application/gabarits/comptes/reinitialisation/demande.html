@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block titre %}Mot de passe oublié{% endblock %}
+
+{% block contenu %}
+  <h1>Mot de passe oublié</h1>
+  <p class="introduction">
+    Indiquez l'adresse de courriel de votre compte : un courriel vous
+    permettra de choisir un nouveau mot de passe.
+  </p>
+  <form method="post" class="formulaire">
+    {% csrf_token %}
+    {% for champ in formulaire %}
+      <div class="champ">
+        {{ champ.label_tag }}
+        {{ champ }}
+        {{ champ.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Envoyer le courriel</button>
+  </form>
+{% endblock %}

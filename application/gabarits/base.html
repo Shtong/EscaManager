@@ -5,13 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block titre %}EscaManager, SCB Escalade{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/accueil.css' %}">
+  <link rel="stylesheet" href="{% static 'css/comptes.css' %}">
 </head>
 <body>
   <header class="bandeau">
     <p class="bandeau-club">SCB Escalade</p>
     <p class="bandeau-outil">EscaManager</p>
+    <nav class="menu" aria-label="Parcours du compte">
+      {% if user.is_authenticated %}
+        <a href="{% url 'espace' %}">Mon espace</a>
+        <form method="post" action="{% url 'deconnexion' %}" class="form-deconnexion">
+          {% csrf_token %}
+          <button type="submit" class="lien-bouton">Déconnexion</button>
+        </form>
+      {% else %}
+        <a href="{% url 'connexion' %}">Connexion</a>
+        <a href="{% url 'inscription' %}">Inscription</a>
+      {% endif %}
+    </nav>
   </header>
   <main class="contenu">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="message-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     {% block contenu %}{% endblock %}
   </main>
   <footer class="pied">
