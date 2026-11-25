@@ -29,6 +29,7 @@ Il sera chargé au démarrage, sans pour autant écraser les variables d'environ
 | `DATABASE_URL` | oui | (aucun) | Base MySQL, par ex. `mysql://root:root@127.0.0.1:3306/escamanager` |
 | `DEBUG` | non | faux | `1`, `true`, `vrai` ou `oui` pour le mode debug |
 | `ALLOWED_HOSTS` | non | `127.0.0.1,localhost` | Hôtes autorisés, séparés par des virgules |
+| `DEFAULT_FROM_EMAIL` | non | `ne-pas-repondre@escaladescb.fr` | Expéditeur des courriels de confirmation et de réinitialisation |
 
 Contenu minimal du `.env` local :
 
@@ -43,6 +44,19 @@ DATABASE_URL=mysql://root:root@127.0.0.1:3306/escamanager
 python manage.py migrate
 python manage.py runserver
 ```
+
+## Parcours des comptes en local
+
+L'inscription, la connexion et la réinitialisation du mot de passe sont
+ouvertes sous `/comptes/` : inscription, courriel de confirmation,
+confirmation par lien valable 72 heures, connexion, espace personnel,
+déconnexion.
+
+En local, aucun courriel ne part vraiment : le backend console écrit
+chaque message dans la console de `runserver`, lien de confirmation ou
+de réinitialisation compris ; ouvrez-le depuis la console pour
+poursuivre le parcours. L'envoi réel par Brevo est différé au registre
+du travail ; l'expéditeur affiché vient de `DEFAULT_FROM_EMAIL`.
 
 ## Tests
 
@@ -84,8 +98,8 @@ Chaque fusion traverse la CI, et seulement après CI verte. Deux jobs :
 domaine/          bibliothèque de domaine, paquet pur (AD-1) : entités, ports, requêtes, services
 application/      projet Django, l'unique adaptatrice
   config/         réglages (variables d'environnement seules), URLs, câblage port/adaptateur (AD-10)
-  comptes/        épic 1 : comptes, modèle, dépôt ORM, vue d'accueil
-  gabarits/       gabarits HTML en français, sans JavaScript
+  comptes/        épic 1 : comptes, modèle utilisateur, dépôt ORM, jetons, formulaires, parcours
+  templates/      gabarits HTML en français, sans JavaScript
   static/         feuilles de style
 tests/            gardes d'imports (AD-1, AD-3), tests du domaine (sans base), tests de l'application (MySQL)
 ```

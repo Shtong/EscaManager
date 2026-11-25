@@ -123,7 +123,7 @@ flowchart LR
 
 | Aspect | Convention |
 | --- | --- |
-| Nommage | symboles, apps Django et URLs en français, snake_case — apps : `comptes`, `saisons`, `adhesions`, `membres`, `federation` |
+| Nommage | symboles, apps Django et URLs en français, snake_case — apps : `comptes`, `saisons`, `adhesions`, `membres`, `federation` ; fichiers du squelette Django aux noms standard (`models.py`, `views.py`, `forms.py`, `templates/`), le français ne déplace pas ce que Django attend ou annonce par convention (décision du 25/11/2026) ; modules sans équivalent Django en français (`depots.py`, `jetons.py`) |
 | Langue | interface, documentation et commentaires en français ; textes écrits directement en français, sans catalogues i18n |
 | Rendu | responsif : chaque page utilisable sur mobile comme sur ordinateur |
 | Données et formats | montants en décimal exact (`Decimal`, jamais float) ; dates en ISO en interne, fuseau Europe/Paris explicite, affichage en français ; identifiants internes auto-incrémentés |
@@ -176,7 +176,7 @@ Environnements : **local** (développement) et **production** (PaaS) ; la CI ex�
                         #        Adherent, représentant légal, mineurs, consentement (R9)
     membres/            # épic 4 : liste des adhérents, export tableur (requête ligne adhérent, AD-12)
     federation/         # épic 5 : adaptateur FFME (port avec bouchon) — Licence
-    gabarits/ static/
+    templates/ static/
   tests/
 ```
 

@@ -157,8 +157,8 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
         dossier.mkdir(parents=True)
         (dossier / "__init__.py").write_text("", encoding="utf-8")
 
-    (application_factice / "saisons" / "vues.py").write_text(
-        "import application.comptes.modeles\n"
+    (application_factice / "saisons" / "views.py").write_text(
+        "import application.comptes.models\n"
         "import importlib\n"
         "import importlib.util\n"
         "from application import comptes\n"
@@ -166,7 +166,7 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
         "from importlib import import_module\n"
         'importlib.import_module("application.comptes.depots")\n'
         'importlib.util.import_module("application.comptes.requetes")\n'
-        'import_module(name="application.comptes.vues")\n'
+        'import_module(name="application.comptes.views")\n'
         '__import__("application.comptes.services")\n',
         encoding="utf-8",
     )
@@ -177,11 +177,11 @@ def test_un_import_croise_est_nomme_fichier_et_module(tmp_path, monkeypatch) -> 
         test_les_apps_ne_s_importent_pas_entre_elles()
 
     message = str(erreur.value)
-    assert "vues.py" in message
-    assert "application.comptes.modeles" in message
+    assert "views.py" in message
+    assert "application.comptes.models" in message
     assert "application.comptes.depots" in message
     assert "application.comptes.requetes" in message
-    assert "application.comptes.vues" in message
+    assert "application.comptes.views" in message
     assert "application.comptes.services" in message
     assert "'application.comptes'" in message
 
@@ -197,12 +197,12 @@ def test_les_imports_licites_passent(tmp_path, monkeypatch) -> None:
         dossier.mkdir(parents=True)
         (dossier / "__init__.py").write_text("", encoding="utf-8")
 
-    (application_factice / "saisons" / "vues.py").write_text(
+    (application_factice / "saisons" / "views.py").write_text(
         "import json\n"
         "import importlib\n"
         "import importlib.util\n"
         "from django.shortcuts import render\n"
-        "from application.saisons.modeles import Saison\n"
+        "from application.saisons.models import Saison\n"
         "from domaine.requetes import compter_comptes\n"
         "from . import vues_locales\n"
         "from ..config import composition\n"

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block titre %}Inscription enregistrée{% endblock %}
+
+{% block contenu %}
+  <h1>Inscription enregistrée</h1>
+  <p>
+    Un courriel de confirmation vient d'être envoyé à l'adresse
+    indiquée.
+  </p>
+  <p>
+    Ouvrez le lien qu'il contient pour activer votre compte : ce lien
+    reste valable 72 heures.
+  </p>
+  <p>
+    Pour la suite, la <a href="{% url 'connexion' %}">page de connexion</a>
+    vous attend.
+  </p>
+{% endblock %}

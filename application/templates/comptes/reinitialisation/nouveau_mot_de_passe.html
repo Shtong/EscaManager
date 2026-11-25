@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block titre %}Nouveau mot de passe{% endblock %}
+
+{% block contenu %}
+  {% if validlink %}
+    <h1>Choisissez un nouveau mot de passe</h1>
+    <form method="post" class="formulaire">
+      {% csrf_token %}
+      {% for champ in formulaire %}
+        <div class="champ">
+          {{ champ.label_tag }}
+          {{ champ }}
+          {{ champ.errors }}
+        </div>
+      {% endfor %}
+      <button type="submit">Changer mon mot de passe</button>
+    </form>
+  {% else %}
+    <h1>Ce lien ne fonctionne pas</h1>
+    <p>
+      Le lien de réinitialisation est invalide, a expiré ou a déjà
+      été utilisé.
+    </p>
+    <p>
+      <a href="{% url 'reinitialisation_demande' %}">Redemandez un courriel de réinitialisation</a>.
+    </p>
+  {% endif %}
+{% endblock %}

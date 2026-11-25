@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block titre %}Connexion{% endblock %}
+
+{% block contenu %}
+  <h1>Connexion</h1>
+  <form method="post" class="formulaire">
+    {% csrf_token %}
+    {% if formulaire.non_field_errors %}
+      <div class="erreurs-formulaire">{{ formulaire.non_field_errors }}</div>
+    {% endif %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% for champ in formulaire %}
+      <div class="champ">
+        {{ champ.label_tag }}
+        {{ champ }}
+        {{ champ.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Se connecter</button>
+  </form>
+  <p class="apres-formulaire">
+    Pas encore de compte ?
+    <a href="{% url 'inscription' %}">Inscrivez-vous</a>.
+  </p>
+  <p class="apres-formulaire">
+    Mot de passe perdu ?
+    <a href="{% url 'reinitialisation_demande' %}">Demandez sa réinitialisation</a>.
+  </p>
+{% endblock %}

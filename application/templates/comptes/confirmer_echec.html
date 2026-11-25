@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titre %}Lien de confirmation invalide{% endblock %}
+
+{% block contenu %}
+  <h1>Ce lien ne fonctionne pas</h1>
+  <p>
+    Le lien de confirmation est invalide, a expiré (validité de
+    72 heures) ou le compte a disparu.
+  </p>
+  <ul>
+    <li>
+      <a href="{% url 'connexion' %}">Déjà confirmé ? Connectez-vous</a>.
+    </li>
+    <li>
+      <a href="{% url 'inscription' %}">Reprenez l'inscription</a>
+      pour recevoir un nouveau courriel de confirmation.
+    </li>
+  </ul>
+{% endblock %}

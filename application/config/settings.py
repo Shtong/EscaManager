@@ -62,7 +62,11 @@ ALLOWED_HOSTS = [hote.strip() for hote in _hotes.split(",") if hote.strip()] or 
 # Applications et middleware ------------------------------------------------
 
 INSTALLED_APPS = [
-    # Volontairement minimale : ni auth, ni sessions, ni admin.
+    # Volontairement sans admin.
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
     "django.contrib.staticfiles",
     "application.comptes",
 ]
@@ -70,7 +74,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 ROOT_URLCONF = "application.config.urls"
@@ -79,15 +87,25 @@ WSGI_APPLICATION = "application.config.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "application" / "gabarits"],
+        "DIRS": [BASE_DIR / "application" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
+
+# Comptes ------------------------------------------------------------------------
+
+# Le courriel est l'identifiant du compte.
+AUTH_USER_MODEL = "comptes.CompteDjango"
+LOGIN_URL = "connexion"
+LOGIN_REDIRECT_URL = "espace"
+LOGOUT_REDIRECT_URL = "accueil"
 
 # Base de données -------------------------------------------------------------
 
@@ -130,9 +148,13 @@ USE_I18N = True
 USE_TZ = True
 
 # Courriels ----------------------------------------------------------------------
-# Backend console : aucun envoi réel pour l'instant
+# Backend console : aucun envoi réel pour l'instant, Brevo est différé au
+# registre du travail.
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = (
+    os.environ.get("DEFAULT_FROM_EMAIL", "").strip() or "ne-pas-repondre@escaladescb.fr"
+)
 
 # Divers ---------------------------------------------------------------------------
 

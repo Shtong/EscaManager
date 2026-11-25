@@ -7,7 +7,7 @@ import pytest
 from django.db.utils import OperationalError
 
 from application.comptes.depots import DepotComptesDjango
-from application.comptes.modeles import CompteDjango
+from application.comptes.models import CompteDjango
 
 
 @pytest.mark.django_db

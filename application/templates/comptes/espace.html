@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titre %}Mon espace{% endblock %}
+
+{% block contenu %}
+  <h1>Mon espace</h1>
+  <p>
+    Vous êtes connecté avec l'adresse
+    <strong>{{ user.courriel }}</strong>.
+  </p>
+  <ul class="liens-espace">
+    <li>
+      <a href="{% url 'reinitialisation_demande' %}">Changer de mot de passe</a>
+    </li>
+  </ul>
+  <form method="post" action="{% url 'deconnexion' %}" class="form-espace">
+    {% csrf_token %}
+    <button type="submit">Déconnexion</button>
+  </form>
+{% endblock %}
