@@ -11,6 +11,7 @@ import re
 import pytest
 from django.conf import settings
 from django.core import mail
+from django.test import Client
 from django.urls import reverse
 
 from application.comptes.jetons import fabriquer_jeton_confirmation
@@ -51,6 +52,13 @@ def _lien_dans(courriel, motif: str) -> str:
     trouve = re.search(motif, courriel.body)
     assert trouve, f"lien introuvable dans le courriel : {courriel.body}"
     return trouve.group(0)
+
+
+def _jeton_csrf(contenu: str) -> str:
+    """Jeton CSRF extrait d'une page rendue, avec son message d'échec."""
+    trouve = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', contenu)
+    assert trouve, f"jeton CSRF introuvable dans la page : {contenu[:200]}"
+    return trouve.group(1)
 
 
 def test_parcours_complet_inscription_connexion_espace_deconnexion(client) -> None:
@@ -243,6 +251,36 @@ def test_deconnexion_n_accepte_que_post(client) -> None:
     reponse = client.get(reverse("deconnexion"))
 
     assert reponse.status_code == 405
+
+
+def test_le_parcours_tient_sans_contournement_csrf() -> None:
+    """Un navigateur réel ne contourne pas la protection CSRF : le jeton
+    suit la rotation opérée par la connexion, du formulaire de connexion
+    jusqu'au bouton de déconnexion, sinon la déconnexion est rejetée
+    avec un 403 en conditions réelles."""
+    _compte_actif()
+    navigateur = Client(enforce_csrf_checks=True)
+
+    page_connexion = navigateur.get(reverse("connexion"))
+    reponse = navigateur.post(
+        reverse("connexion"),
+        {
+            "username": COURRIEL,
+            "password": MOT_DE_PASSE,
+            "csrfmiddlewaretoken": _jeton_csrf(_contenu(page_connexion)),
+        },
+    )
+    assert reponse.status_code == 302
+
+    page_espace = navigateur.get(reverse("espace"))
+    reponse = navigateur.post(
+        reverse("deconnexion"),
+        {"csrfmiddlewaretoken": _jeton_csrf(_contenu(page_espace))},
+    )
+    assert reponse.status_code == 302
+    assert reponse.url == reverse("accueil")
+
+    assert navigateur.get(reverse("espace")).status_code == 302
 
 
 def test_reinitialisation_de_bout_en_bout(client) -> None:
