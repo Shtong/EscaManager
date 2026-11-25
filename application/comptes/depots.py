@@ -1,7 +1,6 @@
-"""Adaptateur du port « DepotComptes » sur l'ORM Django (AD-2).
+"""Implémentation du port DepotComptes sur l'ORM Django.
 
-Le domaine déclare l'interface dans ``domaine/ports/depots.py`` ; seule
-l'application connaît la persistance.
+Le domaine déclare l'interface dans ``domaine/ports/depots.py``.
 """
 
 from application.comptes.modeles import CompteDjango
@@ -9,7 +8,5 @@ from domaine.ports.depots import DepotComptes
 
 
 class DepotComptesDjango(DepotComptes):
-    """Décompte des comptes lu dans MySQL via l'ORM."""
-
     def compter(self) -> int:
         return CompteDjango.objects.count()

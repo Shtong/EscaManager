@@ -8,6 +8,7 @@ companions: [_bmad-output/initiative-escamanager/architecture-escamanager/archit
 after: []
 refined: true
 risk: medium
+status: 'in-progress'
 ---
 
 # Comptes et permissions

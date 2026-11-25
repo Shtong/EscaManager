@@ -3,7 +3,7 @@ title: 'Socle et première page en production'
 type: 'feature'
 ticket: 1
 created: '2026-11-15'
-status: 'built'
+status: done
 baseline_revision: '1fbf7ba58d2214e6d9a801cce8cd1d2f43f4c010'
 route: 'full'
 route_source: 'auto'

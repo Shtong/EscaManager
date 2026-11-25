@@ -1,4 +1,4 @@
-"""Routage d'EscaManager — URLs françaises (AD-3, AD-10)."""
+"""Routage d'EscaManager"""
 
 from django.urls import path
 

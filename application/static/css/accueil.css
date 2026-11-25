@@ -1,5 +1,5 @@
-/* EscaManager — maquette minimale de la page d'accueil (passage UX à venir).
-   Mobile d'abord : aucune largeur fixe, tout reste lisible vers 375 px (AD-6). */
+/* EscaManager : maquette minimale de la page d'accueil.
+   Mobile first : aucune largeur fixe, tout reste lisible vers 375 px. */
 
 :root {
   --encre: #20242c;

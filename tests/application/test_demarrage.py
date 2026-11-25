@@ -1,11 +1,11 @@
-"""Tests de démarrage — matrice « Variable obligatoire absente » et garde
-du moteur MySQL (AD-7 : jamais SQLite, même en local).
+"""Tests de démarrage : variable obligatoire absente, et garde
+du moteur MySQL : jamais SQLite, même en local.
 
 Sans ``SECRET_KEY`` ou ``DATABASE_URL``, l'application refuse de démarrer
 avec un message français explicite (échec rapide au lancement) ; une
 ``DATABASE_URL`` qui ne désigne pas MySQL est refusée de la même façon.
 L'import des réglages est rejoué dans un processus neuf : c'est bien le
-comportement « l'application refuse de démarrer » qui est vérifié, sans
+comportement attendu (l'application refuse de démarrer) qui est vérifié, sans
 toucher aux réglages déjà chargés par la session de tests.
 """
 
@@ -21,6 +21,7 @@ IMPORTER_REGLAGES = "import application.config.settings"
 def _sous_processus(environnement: dict[str, str]) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, "-c", IMPORTER_REGLAGES],
+        check=False,
         env=environnement,
         capture_output=True,
         text=True,
@@ -30,7 +31,7 @@ def _sous_processus(environnement: dict[str, str]) -> subprocess.CompletedProces
 
 @pytest.mark.parametrize("variable", ["SECRET_KEY", "DATABASE_URL"])
 def test_sans_variable_obligatoire_le_demarrage_est_refuse(variable: str) -> None:
-    """La variable testée est présente mais vide, l'autre renseignée —
+    """La variable testée est présente mais vide, l'autre renseignée ;
     présente mais vide suffit : le chargeur .env n'écrase jamais une
     variable déjà dans l'environnement."""
     autre = "DATABASE_URL" if variable == "SECRET_KEY" else "SECRET_KEY"

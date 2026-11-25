@@ -1,5 +1,4 @@
-"""Services du domaine — une mutation = un service, en transaction (AD-4).
+"""Services du domaine : une mutation = un service, en transaction.
 
-Aucun pour l'instant : la story socle ne porte qu'une lecture. Les
-premières écritures arriveront avec les stories suivantes de l'épic.
+Aucun pour l'instant.
 """

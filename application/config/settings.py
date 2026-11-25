@@ -1,8 +1,8 @@
-"""Réglages Django d'EscaManager — pilotés exclusivement par des variables
-d'environnement (AD-15) : aucun secret dans le code, aucun réglage propre
+"""Réglages Django d'EscaManager, pilotés exclusivement par des variables
+d'environnement : aucun secret dans le code, aucun réglage propre
 à un hébergeur.
 
-En local, un petit chargeur stdlib lit le fichier « .env » à la racine du
+En local, un petit chargeur stdlib lit le fichier ".env" à la racine du
 dépôt s'il existe, sans jamais écraser les variables déjà présentes.
 """
 
@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 def _charger_env(chemin: Path) -> None:
-    """Charge un fichier « .env » s'il existe, sans écraser l'environnement."""
+    """Charge un fichier ".env" s'il existe, sans écraser l'environnement."""
     if not chemin.is_file():
         return
     # utf-8-sig : un éventuel BOM en tête de fichier ne doit pas polluer la
@@ -37,7 +37,7 @@ _charger_env(BASE_DIR / ".env")
 
 
 def _variable_obligatoire(nom: str) -> str:
-    """Lit une variable obligatoire ; sans elle, refus de démarrer."""
+    """Lit une variable obligatoire, déclenche une erreur en cas d'absence"""
     valeur = os.environ.get(nom, "").strip()
     if not valeur:
         raise ImproperlyConfigured(
@@ -62,9 +62,7 @@ ALLOWED_HOSTS = [hote.strip() for hote in _hotes.split(",") if hote.strip()] or 
 # Applications et middleware ------------------------------------------------
 
 INSTALLED_APPS = [
-    # Volontairement minimale : ni auth, ni sessions, ni admin — la story 1.2
-    # tranche AUTH_USER_MODEL avant sa première migration, et migrer le User
-    # par défaut maintenant le lui interdirait.
+    # Volontairement minimale : ni auth, ni sessions, ni admin.
     "django.contrib.staticfiles",
     "application.comptes",
 ]
@@ -92,9 +90,6 @@ TEMPLATES = [
 ]
 
 # Base de données -------------------------------------------------------------
-# MySQL uniquement (AD-7) : jamais SQLite, même en local. Tout autre moteur —
-# ou un schéma inconnu — est refusé au démarrage par un message français.
-# Charset utf8mb4 imposé à la connexion comme à la base de test.
 
 _variable_obligatoire("DATABASE_URL")
 try:
@@ -102,12 +97,13 @@ try:
 except dj_database_url.UnknownSchemeError as exc:
     raise ImproperlyConfigured(
         "La variable d'environnement DATABASE_URL doit désigner une base MySQL "
-        f"(AD-7 : jamais SQLite) — schéma inconnu « {exc} »."
+        f"(schéma inconnu : '{exc}')."
     ) from exc
 if DATABASES["default"]["ENGINE"] != "django.db.backends.mysql":
+    moteur_recu = DATABASES["default"]["ENGINE"]
     raise ImproperlyConfigured(
         "La variable d'environnement DATABASE_URL doit désigner une base MySQL "
-        f"(AD-7 : jamais SQLite) — moteur reçu : « {DATABASES['default']['ENGINE']} »."
+        f"(moteur reçu : '{moteur_recu}')."
     )
 DATABASES["default"]["OPTIONS"] = {
     **DATABASES["default"].get("OPTIONS", {}),
@@ -119,9 +115,7 @@ DATABASES["default"]["TEST"] = {
 }
 
 # Fichiers statiques -----------------------------------------------------------
-# WhiteNoise sert les fichiers statiques sans dépendre d'un hébergeur (AD-15).
-# En local comme en CI, les pages se rendent sans collectstatic ; le
-# déploiement différé ajoutera l'étape qui convient (voir README.md).
+# WhiteNoise sert les fichiers statiques sans dépendre d'un hébergeur
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "statique"
@@ -136,8 +130,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Courriels ----------------------------------------------------------------------
-# Backend console : aucun envoi réel avant la production. Brevo et ses
-# variables arriveront avec le déploiement différé.
+# Backend console : aucun envoi réel pour l'instant
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -145,8 +138,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-# Journalisation standard : tout à la console, lisible en développement
-# comme chez n'importe quel hébergeur (AD-15). Aucune exception avalée.
+# Journalisation standard : tout à la console.
 
 LOGGING = {
     "version": 1,

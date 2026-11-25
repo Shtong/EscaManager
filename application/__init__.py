@@ -1,1 +1,1 @@
-"""Application Django d'EscaManager — l'unique adaptatrice du domaine."""
+"""Application Django d'EscaManager."""

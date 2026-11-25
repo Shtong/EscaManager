@@ -9,11 +9,12 @@ __pycache__/
 build/
 dist/
 
-# Configuration locale — jamais de secret suivi
+# Configuration locale : jamais de secret suivi
 .env
 
 # Outils de test
 .pytest_cache/
+.coverage
 
 # Fichiers statiques collectés (WhiteNoise)
 statique/
