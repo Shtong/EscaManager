@@ -27,6 +27,7 @@ Gestion en ligne des adhésions du SCB Escalade, club d'escalade à but non lucr
 - Tests du domaine, sans aucune base : `pytest tests/test_imports_domaine.py tests/test_imports_apps.py tests/test_typographie.py tests/domaine -q --cov=domaine --cov-report=term-missing`. Exige `SECRET_KEY` et `DATABASE_URL` définies (fictives suffisent) : sans elles, les réglages refusent de charger.
 - Tests de l'application : `docker compose up -d --wait` d'abord, puis `pytest tests/application -q` ; jamais SQLite, même en local (écarts de collation).
 - La CI exécute en plus `ruff check .`, `ruff format --check .`, `mypy` (strict, `domaine/`), la garde de typographie et `python manage.py makemigrations --check --dry-run` : tout doit être vert avant fusion.
+- EXE001 (ruff, jeu par défaut) ne peut pas échouer sous Windows : tout fichier suivi portant un shebang doit être exécutable dans git (`git update-index --chmod=+x <fichier>`), sinon seule la CI Linux le verra.
 - Versions décidées : Python 3.13, Django 5.2 LTS, MySQL 8.4 LTS (cible), mysqlclient 2.3.0, ruff 0.17.6.
 
 ## Conventions qui divergent des défauts
