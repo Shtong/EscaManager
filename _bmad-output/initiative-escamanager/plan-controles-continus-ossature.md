@@ -3,7 +3,7 @@ title: 'Contrôles continus de l'ossature — ruff, mypy strict, pytest-cov, gar
 type: feature
 ticket: ''
 created: '2026-11-21'
-status: built
+status: done
 baseline_revision: c32fe1bca17e595e74aa435834a13d5bd37e52e4
 route: full
 route_source: auto
@@ -86,6 +86,7 @@ context:
 - 21/11/2026 — Renégociation du bloc figéré par l'humain : ruff basculé sur son jeu par défaut, épinglé `==0.17.6` ; exemption RUF012 pour `**/migrations/*` (idiome des migrations Django générées) ; `check=False` explicite dans `test_demarrage.py` (les 3 tests rejoués verts — ils attendent un code non nul, le drapeau explicite est le comportement réel). Vérification complète rejouée après bascule.
 - 21/11/2026 — Demandes du mainteneur avant poussée : passe humaine de clarification (commentaires réduits au présent, références AD sorties du code, README resserré) puis quatre règles inscrites par bmad-project-context dans le bloc AGENTS.md (pas de tiret cadratin, pas de guillemets typographiques français, code au présent seul, pas de références AD en commentaire de code). Conséquences exécutées sur la branche : nouvelle garde `tests/test_typographie.py` (dans la CI, périmètre club hors `_bmad-output/`), balayage des 139 occurrences existantes (code, commentaires, gabarits, README, CI, réglages), commande CI étendue à la garde, espace finale corrigée dans `composition.py` (attrapée par `ruff format --check`).
 - 25/11/2026 — Premier échec réel de la CI sur la PR (run 45684978297 puis 45685839699, étape ruff) : EXE001, shebang de `manage.py` sans bit exécutable, règle du jeu par défaut qui ne peut pas échouer sous Windows (écart local/runner Linux invisible en vérification locale). Correctif : mode git 100755 sur `manage.py` (commit 42f61f8) ; piège consigné dans le bloc AGENTS.md. Le job application, lui, est vert sur le runner (6 passed, makemigrations conforme).
+- 25/11/2026 : fusion de la PR #2 dans main (commit de fusion 6bceb82) après CI verte et revue humaine ; le build est clos.
 - 25/11/2026 — Passe 2 de la revue quick reprise après interruption (l'implémenteur d'origine est perdu, correctifs appliqués par l'orchestrateur) : sections Tests et CI rétablies dans le README (supprimées au lieu d'être mises à jour), deux graphies d'import dynamique ajoutées à la garde AD-3 (« importlib.util.import_module », mot-clé « name »), références AD-x sorties de `tests/domaine/test_depots.py` et `domaine/requetes.py`, grammaire et vocabulaire français rétablis dans `composition.py` et `depots.py`, espace finale du README supprimée. Vérifications rejouées vertes : `ruff check .`, `ruff format --check .` (31 fichiers), `mypy` (7 fichiers), 17 tests du domaine à 100 % (seuil 90), 6 tests de l'application sur MySQL, `makemigrations --check` « No changes detected ».
 
 ## Plan Change Log
